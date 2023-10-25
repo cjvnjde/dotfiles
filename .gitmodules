@@ -1,0 +1,9 @@
+[submodule "nvim"]
+	path = nvim
+	url = git@github.com:cjvnjde/dotfiles.nvim.git
+[submodule "tmux"]
+	path = tmux
+	url = git@github.com:cjvnjde/dotfiles.tmux.git
+[submodule "home"]
+	path = home
+	url = git@github.com:cjvnjde/dotfiles.home.git
