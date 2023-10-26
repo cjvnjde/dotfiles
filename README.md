@@ -4,6 +4,12 @@ This repository manages configuration files for various tools and utilities usin
 
 ## Getting Started
 
+### Requirements
+
+- [Oh My Zsh](https://ohmyz.sh/)
+- [autojump](https://github.com/wting/autojump)
+- [asdf](https://asdf-vm.com)
+
 ### Installation
 
 1. Clone the repository along with its submodules:
@@ -65,3 +71,29 @@ This repository manages configuration files for various tools and utilities usin
     ```sh
     ./setup.sh
     ```
+
+## Platform Specific Configuration for Zsh
+
+1. **Navigate to Your Home Directory**: 
+
+    ```sh
+    cd $HOME
+    ```
+
+2. **Create the `.zshrc_local` File**: 
+
+    If it doesn't already exist, create the `.zshrc_local` file.
+
+    ```sh
+    touch .zshrc_local
+    ```
+
+3. **Edit the `.zshrc_local` File**: 
+
+    Open the file in your preferred text editor.
+
+    ```sh
+    nano .zshrc_local  # or use vim, code, etc.
+    ```
+
+    Add your platform-specific configurations, aliases, environment variables, etc., to this file.
