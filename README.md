@@ -9,6 +9,7 @@ This repository manages configuration files for various tools and utilities usin
 - [Oh My Zsh](https://ohmyz.sh/)
 - [autojump](https://github.com/wting/autojump)
 - [asdf](https://asdf-vm.com)
+- [fzf](https://github.com/junegunn/fzf)
 
 ### Installation
 
