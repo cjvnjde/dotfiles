@@ -8,6 +8,7 @@ dotfiles=(
   "nvim:$HOME/.config/nvim"
   "tmux:$HOME/.config/tmux"
   "home/.zshrc:$HOME/.zshrc"
+  "home/.ideavimrc:$HOME/.ideavimrc"
 )
 # Function to create a backup
 backup() {
