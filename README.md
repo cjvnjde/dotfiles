@@ -10,6 +10,7 @@ This repository manages configuration files for various tools and utilities usin
 - [autojump](https://github.com/wting/autojump)
 - [asdf](https://asdf-vm.com)
 - [fzf](https://github.com/junegunn/fzf)
+- [rigrep](https://github.com/BurntSushi/ripgrep)
 
 ### Installation
 
