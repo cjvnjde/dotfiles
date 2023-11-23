@@ -11,6 +11,8 @@ This repository manages configuration files for various tools and utilities usin
 - [asdf](https://asdf-vm.com)
 - [fzf](https://github.com/junegunn/fzf)
 - [rigrep](https://github.com/BurntSushi/ripgrep)
+- [eslint_d](https://github.com/mantoni/eslint_d.js)
+- [prettierd](https://github.com/fsouza/prettierd)
 
 ### Installation
 
