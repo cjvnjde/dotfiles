@@ -6,6 +6,7 @@ This repository manages configuration files for various tools and utilities usin
 
 ### Requirements
 
+- [Alacritty](https://alacritty.org/)
 - [Oh My Zsh](https://ohmyz.sh/)
 - [autojump](https://github.com/wting/autojump)
 - [asdf](https://asdf-vm.com)
