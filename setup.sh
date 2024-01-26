@@ -7,9 +7,11 @@ DOTFILES_DIR="$HOME/dotfiles"
 dotfiles=(
   "nvim:$HOME/.config/nvim"
   "tmux:$HOME/.config/tmux"
+  "alacritty:$HOME/.config/alacritty"
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
 )
+
 # Function to create a backup
 backup() {
   local target="$1"
