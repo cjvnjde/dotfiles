@@ -9,4 +9,4 @@
 	url = git@github.com:cjvnjde/dotfiles.home.git
 [submodule "alacritty"]
 	path = alacritty
-	url = git@github.com:cjvnjde/alacritty.git
+	url = git@github.com:cjvnjde/dotfiles.alacritty.git
