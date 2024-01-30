@@ -10,6 +10,7 @@ dotfiles=(
   "alacritty:$HOME/.config/alacritty"
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
+  "scripts:$HOME/.local/scripts"
 )
 
 # Function to create a backup

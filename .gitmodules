@@ -10,3 +10,6 @@
 [submodule "alacritty"]
 	path = alacritty
 	url = git@github.com:cjvnjde/dotfiles.alacritty.git
+[submodule "scripts"]
+	path = scripts
+	url = git@github.com:cjvnjde/dotfiles.scripts.git
