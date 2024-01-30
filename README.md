@@ -16,6 +16,7 @@ This repository manages configuration files for various tools and utilities usin
 - [eslint_d](https://github.com/mantoni/eslint_d.js)
 - [prettierd](https://github.com/fsouza/prettierd)
 - [emmet_ls](https://github.com/aca/emmet-ls)
+- [zsh node-bin](https://github.com/remcohaszing/zsh-node-bin)
 
 ### Installation
 
