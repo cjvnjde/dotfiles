@@ -11,6 +11,7 @@ dotfiles=(
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
   "scripts:$HOME/.local/scripts"
+  "sway:$HOME/.config/sway"
 )
 
 # Function to create a backup
