@@ -1,0 +1,13 @@
+import = [
+  "~/.config/alacritty/themes/catppuccin.toml"
+]
+
+[window]
+option_as_alt = "Both"
+
+[font.normal]
+family = "FiraCode Nerd Font"
+
+[window.padding]
+x = 0
+y = 0

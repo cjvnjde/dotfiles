@@ -1,0 +1,42 @@
+nnoremap <C-a> ggVG
+
+nnoremap <Space> <Nop>
+let mapleader=" "
+
+set scrolloff=5
+
+noremap <C-u> <C-u>zz
+noremap <C-d> <C-d>zz
+noremap <leader>p \"_dP
+noremap <leader><leader>p \"+p
+
+vmap y ygv<Esc>
+vmap <leader>y \"+y
+
+set relativenumber
+set number
+set ideamarks
+set ideajoin
+
+set incsearch
+set hlsearch
+
+set breakindent
+set autoindent
+set smartindent
+
+set expandtab
+set smarttab
+
+map Q gq
+map <leader>tt <Action>(osmedile.intellij.stringmanip.WordsAndCamelToConstantStyleCaseAction)
+
+Plug 'machakann/vim-highlightedyank'
+Plug 'tpope/vim_commentary'
+Plug 'preservim/nerdtree'
+Plug 'easymotion/vim-easymotion'
+Plug 'tpope/vim-surround'
+
+Plug 'vim-matchit'
+Plug 'chrisbra/matchit'
+set matchit
