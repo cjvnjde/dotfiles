@@ -16,3 +16,6 @@
 [submodule "sway"]
 	path = sway
 	url = git@github.com:cjvnjde/dotfiles.sway.git
+[submodule "waybar"]
+	path = waybar
+	url = git@github.com:cjvnjde/dotfiles.waybar.git

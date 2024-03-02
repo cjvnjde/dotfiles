@@ -22,15 +22,14 @@ This repository manages configuration files for various tools and utilities usin
 
 1. Clone the repository along with its submodules:
 
-    ```sh
+    ```shell
     git clone --recurse-submodules git@github.com:cjvnjde/dotfiles.git $HOME/dotfiles
-    cd $HOME/dotfiles
     ```
 
 2. Run the setup script to create symbolic links for your dotfiles:
 
-    ```sh
-    ./setup.sh
+    ```shell
+    $HOME/dotfiles/setup.sh
     ```
 
 ## Usage
@@ -40,7 +39,7 @@ This repository manages configuration files for various tools and utilities usin
 1. Add the external configuration repository as a submodule:
 
     ```sh
-    git submodule add https://github.com/username/repo.git path/to/repo
+    git submodule add git@github.com:cjvnjde/reponame.git path/to/repo
     ```
 
 2. Update the associative array in the `setup.sh` script:
@@ -55,7 +54,7 @@ This repository manages configuration files for various tools and utilities usin
 3. Run the setup script to create the symbolic link:
 
     ```sh
-    ./setup.sh
+    $HOME/dotfiles/setup.sh
     ```
 
 4. Commit and push your changes:

@@ -12,6 +12,7 @@ dotfiles=(
   "home/.ideavimrc:$HOME/.ideavimrc"
   "scripts:$HOME/.local/scripts"
   "sway:$HOME/.config/sway"
+  "waybar:$HOME/.config/waybar"
 )
 
 # Function to create a backup
