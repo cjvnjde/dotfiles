@@ -19,3 +19,6 @@
 [submodule "waybar"]
 	path = waybar
 	url = git@github.com:cjvnjde/dotfiles.waybar.git
+[submodule "lf"]
+	path = lf
+	url = git@github.com:cjvnjde/dotfiles.lf.git

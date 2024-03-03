@@ -13,6 +13,7 @@ dotfiles=(
   "scripts:$HOME/.local/scripts"
   "sway:$HOME/.config/sway"
   "waybar:$HOME/.config/waybar"
+  "lf:$HOME/.config/lf"
 )
 
 # Function to create a backup
