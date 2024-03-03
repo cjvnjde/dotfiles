@@ -22,3 +22,6 @@
 [submodule "lf"]
 	path = lf
 	url = git@github.com:cjvnjde/dotfiles.lf.git
+[submodule "rofi"]
+	path = rofi
+	url = git@github.com:cjvnjde/dotfiles.rofi.git

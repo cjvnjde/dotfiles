@@ -14,6 +14,7 @@ dotfiles=(
   "sway:$HOME/.config/sway"
   "waybar:$HOME/.config/waybar"
   "lf:$HOME/.config/lf"
+  "rofi:$HOME/.config/rofi"
 )
 
 # Function to create a backup
