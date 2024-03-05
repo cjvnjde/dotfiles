@@ -25,3 +25,6 @@
 [submodule "rofi"]
 	path = rofi
 	url = git@github.com:cjvnjde/dotfiles.rofi.git
+[submodule "kitty"]
+	path = kitty
+	url = git@github.com:cjvnjde/dotfiles.kitty.git
