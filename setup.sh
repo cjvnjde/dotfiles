@@ -16,6 +16,7 @@ dotfiles=(
   "lf:$HOME/.config/lf"
   "rofi:$HOME/.config/rofi"
   "kitty:$HOME/.config/kitty"
+  "dunst:$HOME/.config/dunst"
 )
 
 # Function to create a backup
