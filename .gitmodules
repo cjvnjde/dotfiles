@@ -31,3 +31,6 @@
 [submodule "dunst"]
 	path = dunst
 	url = git@github.com:cjvnjde/dotfiles.dunst.git
+[submodule "onedrive"]
+	path = onedrive
+	url = git@github.com:cjvnjde/dotfiles.onedrive.git
