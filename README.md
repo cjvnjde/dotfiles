@@ -7,16 +7,18 @@ This repository manages configuration files for various tools and utilities usin
 ### Requirements
 
 - [Nerd Fonts](https://www.nerdfonts.com/)
-- [Alacritty](https://alacritty.org/)
 - [Oh My Zsh](https://ohmyz.sh/)
 - [autojump](https://github.com/wting/autojump)
 - [asdf](https://asdf-vm.com)
 - [fzf](https://github.com/junegunn/fzf)
 - [rigrep](https://github.com/BurntSushi/ripgrep)
-- [eslint_d](https://github.com/mantoni/eslint_d.js)
-- [prettierd](https://github.com/fsouza/prettierd)
-- [emmet_ls](https://github.com/aca/emmet-ls)
 - [zsh node-bin](https://github.com/remcohaszing/zsh-node-bin)
+- [eza](https://github.com/eza-community/eza)
+- [atuin](https://github.com/atuinsh/atuin)
+
+## Notes
+
+Core theme - catppuccin Mocha
 
 ### Installation
 
