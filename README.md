@@ -6,15 +6,24 @@ This repository manages configuration files for various tools and utilities usin
 
 ### Requirements
 
+#### Global deps 
+
 - [Nerd Fonts](https://www.nerdfonts.com/)
 - [Oh My Zsh](https://ohmyz.sh/)
-- [autojump](https://github.com/wting/autojump)
-- [asdf](https://asdf-vm.com)
+- [asdf](https://asdf-vm.com) package version manager
+
+#### Terminal deps
+- [atuin](https://github.com/atuinsh/atuin) search in terminal history
+- [eza](https://github.com/eza-community/eza) lf alternative
 - [fzf](https://github.com/junegunn/fzf)
-- [rigrep](https://github.com/BurntSushi/ripgrep)
+
+#### Home deps
+- [zoxide](https://github.com/ajeetdsouza/zoxide) better autojump
 - [zsh node-bin](https://github.com/remcohaszing/zsh-node-bin)
-- [eza](https://github.com/eza-community/eza)
-- [atuin](https://github.com/atuinsh/atuin)
+
+#### nvim deps
+- [fzf](https://github.com/junegunn/fzf)
+- [ripgrep](https://github.com/BurntSushi/ripgrep)
 
 ## Notes
 
