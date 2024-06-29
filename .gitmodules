@@ -34,3 +34,6 @@
 [submodule "onedrive"]
 	path = onedrive
 	url = git@github.com:cjvnjde/dotfiles.onedrive.git
+[submodule "atuin"]
+	path = atuin 
+	url = git@github.com:cjvnjde/dotfiles.atuin.git

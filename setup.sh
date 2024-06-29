@@ -18,6 +18,7 @@ dotfiles=(
   "kitty:$HOME/.config/kitty"
   "dunst:$HOME/.config/dunst"
   "onedrive:$HOME/.config/onedrive"
+  "atuin:$HOME/.config/atuin"
 )
 
 # Function to create a backup
