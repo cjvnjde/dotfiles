@@ -10,6 +10,7 @@ dotfiles=(
   "alacritty:$HOME/.config/alacritty"
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
+  "home/.gitconfig:$HOME/.gitconfig"
   "scripts:$HOME/.local/scripts"
   "sway:$HOME/.config/sway"
   "waybar:$HOME/.config/waybar"
