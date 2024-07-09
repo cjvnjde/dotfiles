@@ -37,3 +37,6 @@
 [submodule "atuin"]
 	path = atuin 
 	url = git@github.com:cjvnjde/dotfiles.atuin.git
+[submodule "bat"]
+	path = bat
+	url = git@github.com:cjvnjde/dotfiles.bat.git

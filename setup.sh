@@ -20,6 +20,7 @@ dotfiles=(
   "dunst:$HOME/.config/dunst"
   "onedrive:$HOME/.config/onedrive"
   "atuin:$HOME/.config/atuin"
+  "bat:$HOME/.config/bat"
 )
 
 # Function to create a backup
