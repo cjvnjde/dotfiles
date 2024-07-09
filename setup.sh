@@ -101,3 +101,4 @@ done
 
 echo "Symlinks setup complete."
 
+sh ./after_setup.sh
