@@ -33,6 +33,10 @@ This repository manages configuration files for various tools and utilities usin
 - [fzf](https://github.com/junegunn/fzf)
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 
+### different
+
+- [btop](https://github.com/aristocratos/btop) system monitoring tool
+
 ## Notes
 
 Core theme - catppuccin Mocha
