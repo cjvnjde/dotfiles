@@ -21,6 +21,7 @@ dotfiles=(
   "onedrive:$HOME/.config/onedrive"
   "atuin:$HOME/.config/atuin"
   "bat:$HOME/.config/bat"
+  "zellij:$HOME/.config/zellij"
 )
 
 # Function to create a backup

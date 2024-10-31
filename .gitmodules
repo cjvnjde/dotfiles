@@ -40,3 +40,6 @@
 [submodule "bat"]
 	path = bat
 	url = git@github.com:cjvnjde/dotfiles.bat.git
+[submodule "zillij"]
+	path = zellij
+	url = git@github.com:cjvnjde/dotfiles.zellij.git
