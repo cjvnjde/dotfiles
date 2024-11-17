@@ -43,3 +43,6 @@
 [submodule "zillij"]
 	path = zellij
 	url = git@github.com:cjvnjde/dotfiles.zellij.git
+[submodule "hyprland"]
+	path = hyprland
+	url = git@github.com:cjvnjde/dotfiles.hyprland.git

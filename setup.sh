@@ -6,22 +6,23 @@ DOTFILES_DIR="$HOME/dotfiles"
 # Define the configurations and their target locations
 dotfiles=(
   "nvim:$HOME/.config/nvim"
-  "tmux:$HOME/.config/tmux"
-  "alacritty:$HOME/.config/alacritty"
+#  "tmux:$HOME/.config/tmux"
+#  "alacritty:$HOME/.config/alacritty"
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
   "home/.gitconfig:$HOME/.gitconfig"
   "scripts:$HOME/.local/scripts"
-  "sway:$HOME/.config/sway"
+#  "sway:$HOME/.config/sway"
   "waybar:$HOME/.config/waybar"
-  "lf:$HOME/.config/lf"
+#  "lf:$HOME/.config/lf"
   "rofi:$HOME/.config/rofi"
   "kitty:$HOME/.config/kitty"
   "dunst:$HOME/.config/dunst"
-  "onedrive:$HOME/.config/onedrive"
+#  "onedrive:$HOME/.config/onedrive"
   "atuin:$HOME/.config/atuin"
   "bat:$HOME/.config/bat"
   "zellij:$HOME/.config/zellij"
+  "hyprland:$HOME/.config/hypr"
 )
 
 # Function to create a backup
