@@ -7,7 +7,7 @@ DOTFILES_DIR="$HOME/dotfiles"
 dotfiles=(
   "nvim:$HOME/.config/nvim"
 #  "tmux:$HOME/.config/tmux"
-#  "alacritty:$HOME/.config/alacritty"
+  "alacritty:$HOME/.config/alacritty"
   "home/.zshrc:$HOME/.zshrc"
   "home/.ideavimrc:$HOME/.ideavimrc"
   "home/.gitconfig:$HOME/.gitconfig"
