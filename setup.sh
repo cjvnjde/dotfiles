@@ -10,7 +10,7 @@ dotfiles=(
   "home/.ideavimrc:$HOME/.ideavimrc"
   "home/.gitconfig:$HOME/.gitconfig"
   "scripts:$HOME/.local/scripts"
-#  "sway:$HOME/.config/sway"
+  "sway:$HOME/.config/sway"
   "waybar:$HOME/.config/waybar"
 #  "lf:$HOME/.config/lf"
   "rofi:$HOME/.config/rofi"
