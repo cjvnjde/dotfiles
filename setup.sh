@@ -21,6 +21,7 @@ dotfiles=(
   "bat:$HOME/.config/bat"
   "zellij:$HOME/.config/zellij"
   "hyprland:$HOME/.config/hypr"
+  "ghostty:$HOME/.config/ghostty"
 )
 
 backup() {
