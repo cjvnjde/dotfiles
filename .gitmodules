@@ -52,3 +52,6 @@
 [submodule "ghosty"]
 	path = ghosty
 	url = git@github.com:cjvnjde/dotfiles.ghosty.git
+[submodule "niri"]
+	path = niri
+	url = git@github.com:cjvnjde/dotfiles.niri.git

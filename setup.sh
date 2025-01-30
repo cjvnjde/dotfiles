@@ -22,6 +22,7 @@ dotfiles=(
   "zellij:$HOME/.config/zellij"
   "hyprland:$HOME/.config/hypr"
   "ghostty:$HOME/.config/ghostty"
+  "niri:$HOME/.config/niri"
 )
 
 backup() {
