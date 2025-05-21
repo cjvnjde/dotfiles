@@ -88,4 +88,8 @@ done
 
 echo "Symlinks setup complete."
 
+touch ~/.hushlogin
+
+echo "hushlogin has been created"
+
 sh "$DOTFILES_DIR/after_setup.sh"
