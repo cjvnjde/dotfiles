@@ -1,129 +1,106 @@
-# Dotfiles Repository
+# My Personal Dotfiles
 
-This repository manages configuration files for various tools and utilities using Git submodules, helping to maintain a consistent and easily reproducible development environment across different machines.
+A personal collection of dotfiles for macOS and Linux, designed for a consistent and productive development environment. This setup is modular, managed by a simple setup script, and consistently themed with **Catppuccin Mocha**.
 
-## Getting Started
+-----
 
-### Requirements
+## Software Overview
 
-#### Global deps
+| Category          | Tools                                            |
+| ----------------- | ------------------------------------------------ |
+| **Window Manager**| `Sway`, `Hyprland`, `Niri`                         |
+| **Terminal** | `Alacritty`, `Kitty`, `Zellij`                   |
+| **Shell** | `Zsh` (with Oh My Zsh, Atuin, Zoxide)            |
+| **Editor** | `Neovim`                                         |
+| **Git UI** | `delta`, `lazygit`                           |
+| **File Manager** | `lf`                                             |
+| **Utilities** | `bat`, `eza`, `fzf`, `ripgrep`, `tldr`, `thefuck`  |
 
-- [Nerd Fonts](https://www.nerdfonts.com/)
-- [Oh My Zsh](https://ohmyz.sh/)
-- [asdf](https://asdf-vm.com) package version manager
-- [lf](https://github.com/gokcehan/lf) file manager
-- [tldr](https://github.com/tldr-pages/tldr) simpler man command
+-----
 
-#### Terminal deps
+## Requirements
 
-- [atuin](https://github.com/atuinsh/atuin) search in terminal history
-- [eza](https://github.com/eza-community/eza) lf alternative
-- [fzf](https://github.com/junegunn/fzf)
-- [delta](https://github.com/dandavison/delta)
+To use this configuration, you'll need to install the following software.
 
-#### Home deps
+- **Core**:
 
-- [zoxide](https://github.com/ajeetdsouza/zoxide) better autojump
-- [zsh node-bin](https://github.com/remcohaszing/zsh-node-bin)
-- [thefuck](https://github.com/nvbn/thefuck)
-- [bat](https://github.com/sharkdp/bat)
+  - `git`: For cloning and managing the repository.
+  - `zsh` & [oh-my-zsh](https://ohmyz.sh/): The primary shell environment.
+  - [Nerd Fonts](https://www.nerdfonts.com/): Required for icons (this config uses **FiraCode Nerd Font**).
 
-#### nvim deps
+- **Terminal Tools**:
 
-- [fzf](https://github.com/junegunn/fzf)
-- [ripgrep](https://github.com/BurntSushi/ripgrep)
+  - [atuin](https://github.com/atuinsh/atuin): For enhanced shell history.
+  - [bat](https://github.com/sharkdp/bat): A `cat` clone with syntax highlighting.
+  - [eza](https://github.com/eza-community/eza): A modern replacement for `ls`.
+  - [fzf](https://github.com/junegunn/fzf): A command-line fuzzy finder.
+  - [delta](https://github.com/dandavison/delta): A viewer for git diffs.
+  - [neovim](https://neovim.io/): The primary text editor.
+  - [ripgrep](https://github.com/BurntSushi/ripgrep): A fast line-oriented search tool.
+  - [zoxide](https://github.com/ajeetdsouza/zoxide): A smarter `cd` command.
 
-### different
+- **GUI (Linux/Wayland)**:
 
-- [btop](https://github.com/aristocratos/btop) system monitoring tool
+  - `Sway` or `Hyprland`: Tiling window managers.
+  - `Waybar`: A status bar for Wayland.
+  - `Rofi`: An application launcher.
+  - `Dunst`: For notifications.
+  - `grim` & `slurp`: For screenshots.
 
-## Notes
+-----
 
-Core theme - catppuccin Mocha
+## Installation
 
-### Installation
+1. **Clone the repository** and its submodules:
 
-1. Clone the repository along with its submodules:
+    ```bash
+    git clone --recurse-submodules git@github.com:cjvnjde/dotfiles.git $HOME/dotfiles
+    ```
 
-   ```shell
-   git clone --recurse-submodules git@github.com:cjvnjde/dotfiles.git $HOME/dotfiles
-   ```
+2. **Run the setup script** to create the necessary symbolic links:
 
-2. Run the setup script to create symbolic links for your dotfiles:
+    ```bash
+    cd $HOME/dotfiles/setup.sh
+    ```
 
-   ```shell
-   $HOME/dotfiles/setup.sh
-   ```
+### Customization
 
-## Usage
+You can control which configurations are installed by editing `$HOME/.dotfiles/.modules`. For machine-specific overrides, create a file at `$HOME/.dotfiles/.modules.local` (this file is ignored by Git).
 
-### Adding New Dotfiles
+For example, to disable `sway`, add `!sway` to your `.modules.local` file.
 
-1. Add the external configuration repository as a submodule:
+```
+!sway
+```
 
-   ```sh
-   git submodule add git@github.com:cjvnjde/reponame.git path/to/repo
-   ```
+#### Alacritty
 
-2. Update the associative array in the `setup.sh` script:
+The main `alacritty.toml` imports an `overrides.toml` file, which is ignored by Git. You can create `$HOME/dotfiles/alacritty/overrides.toml` to set options that apply only to the current machine
 
-   ```bash
-   dotfiles=(
-   ...
-   "path/to/file:path/to/symbolic"
-   )
-   ```
+```toml
+# $HOME/dotfiles/alacritty/overrides.toml
 
-3. Run the setup script to create the symbolic link:
+[window]
+decorations = "Full"
+```
 
-   ```sh
-   $HOME/dotfiles/setup.sh
-   ```
+#### Zsh
 
-4. Commit and push your changes:
+The `.zshrc` file will automatically source `$HOME/.zshrc_local` if it exists. This is the ideal place for private aliases, environment variables, or sourcing scripts that are only present on one machine.
 
-   ```sh
-   git add .
-   git commit -m "Add repo submodule"
-   git push
-   ```
+```bash
+# ~/.zshrc_local
 
-### Updating Dotfiles
+alias work-project="cd ~/projects/work/my-secret-project"
+export GITHUB_TOKEN="your_token_here"
+```
 
-1. Pull the latest changes, including submodule updates:
+-----
 
-   ```sh
-   git pull --recurse-submodules
-   ```
+## Management
 
-2. Run the setup script to apply the changes:
+- **Updating**: Pull the latest changes for the repository and all submodules.
 
-   ```sh
-   ./setup.sh
-   ```
-
-## Platform Specific Configuration for Zsh
-
-1. **Navigate to Your Home Directory**:
-
-   ```sh
-   cd $HOME
-   ```
-
-2. **Create the `.zshrc_local` File**:
-
-   If it doesn't already exist, create the `.zshrc_local` file.
-
-   ```sh
-   touch .zshrc_local
-   ```
-
-3. **Edit the `.zshrc_local` File**:
-
-   Open the file in your preferred text editor.
-
-   ```sh
-   nano .zshrc_local  # or use vim, code, etc.
-   ```
-
-   Add your platform-specific configurations, aliases, environment variables, etc., to this file.
+    ```bash
+    cd ~/dotfiles && git pull --recurse-submodules
+    ```

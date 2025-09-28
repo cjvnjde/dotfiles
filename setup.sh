@@ -13,6 +13,7 @@ zshrc|home/.zshrc|$HOME/.zshrc
 ideavim|home/.ideavimrc|$HOME/.ideavimrc
 git|home/.gitconfig|$HOME/.gitconfig
 scripts|scripts|$HOME/.local/scripts
+scripts|scripts/clipboard-code/clipboard-code.sh|$HOME/.local/scripts/ccode
 atuin|atuin|$HOME/.config/atuin
 bat|bat|$HOME/.config/bat
 zellij|zellij|$HOME/.config/zellij
@@ -53,8 +54,18 @@ resolve_path() {
 }
 
 backup_then_rm() {
-  local target="$1" b="$target.bak" n=1
-  while [ -e "$b" ]; do b="$target.bak$n"; n=$((n+1)); done
+  local target
+  target="$1"
+
+  local b
+  b="$target.bak"
+
+  local n=1
+  while [ -e "$b" ]; do
+    b="$target.bak$n"
+    n=$((n+1))
+  done
+
   if [ -e "$target" ] || [ -L "$target" ]; then
     cp -a "$target" "$b" 2>/dev/null || true
     rm -rf "$target"

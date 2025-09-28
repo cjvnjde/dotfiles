@@ -55,6 +55,3 @@
 [submodule "niri"]
 	path = niri
 	url = git@github.com:cjvnjde/dotfiles.niri.git
-[submodule "clipboard-code"]
-	path = scripts/clipboard-code
-	url = git@github.com:cjvnjde/clipboard-code.git
