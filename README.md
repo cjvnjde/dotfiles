@@ -38,6 +38,9 @@ To use this configuration, you'll need to install the following software.
   - [neovim](https://neovim.io/): The primary text editor.
   - [ripgrep](https://github.com/BurntSushi/ripgrep): A fast line-oriented search tool.
   - [zoxide](https://github.com/ajeetdsouza/zoxide): A smarter `cd` command.
+  - [jq](https://jqlang.org/): A command-line JSON parser.
+  - [mise](https://mise.jdx.dev/): Dev tools/runtimes manager.
+  - [zellij](https://zellij.dev/): A terminal workspace.
 
 - **GUI (Linux/Wayland)**:
 
