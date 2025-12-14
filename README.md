@@ -26,6 +26,8 @@ To use this configuration, you'll need to install the following software.
 
   - `git`: For cloning and managing the repository.
   - `zsh` & [oh-my-zsh](https://ohmyz.sh/): The primary shell environment.
+  - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md)
+  - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)
   - [Nerd Fonts](https://www.nerdfonts.com/): Required for icons (this config uses **FiraCode Nerd Font**).
 
 - **Terminal Tools**:
