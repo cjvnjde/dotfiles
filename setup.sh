@@ -11,6 +11,7 @@ nvim|nvim|$HOME/.config/nvim
 alacritty|alacritty|$HOME/.config/alacritty
 zshrc|home/.zshrc|$HOME/.zshrc
 ideavim|home/.ideavimrc|$HOME/.ideavimrc
+wezterm|home/.wezterm.lua|$HOME/.wezterm.lua
 git|home/.gitconfig|$HOME/.gitconfig
 scripts|scripts|$HOME/.local/scripts
 scripts|scripts/clipboard-code/clipboard-code.sh|$HOME/.local/scripts/ccode
