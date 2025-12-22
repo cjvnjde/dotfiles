@@ -28,8 +28,8 @@ ghostty|ghostty|$HOME/.config/ghostty
 niri|niri|$HOME/.config/niri
 EOF
 
-DEFAULT_FILE="$DOTFILES_DIR/.modules"        # optional (tracked)
-LOCAL_FILE="$DOTFILES_DIR/.modules.local"    # per-machine (ignored)
+DEFAULT_FILE="$DOTFILES_DIR/.modules"
+LOCAL_FILE="$DOTFILES_DIR/.modules.local"
 
 # ====== LOGGING ======
 log()      { printf '%s\n' "$*"; }
@@ -42,73 +42,83 @@ trap 'error "Failed at line $LINENO: $BASH_COMMAND"' ERR
 
 # ====== HELPERS ======
 trim_comment() {
-  # strip comments + trim
-  local l="${1%%#*}"
-  l="$(printf '%s' "$l" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-  printf '%s' "$l"
+  local line="${1%%#*}"
+  line="${line#"${line%%[![:space:]]*}"}"
+  line="${line%"${line##*[![:space:]]}"}"
+  printf '%s' "$line"
 }
 
 resolve_path() {
-  if command -v realpath >/dev/null 2>&1; then realpath "$1"
-  elif command -v readlink >/dev/null 2>&1; then readlink -f "$1" 2>/dev/null || printf '%s\n' "$1"
-  else printf '%s\n' "$1"; fi
+  local path="$1"
+  
+  if [ -L "$path" ] && [ ! -e "$path" ]; then
+    readlink "$path" 2>/dev/null || printf '%s\n' "$path"
+    return
+  fi
+  
+  if command -v realpath >/dev/null 2>&1; then
+    realpath "$path" 2>/dev/null || printf '%s\n' "$path"
+  elif command -v readlink >/dev/null 2>&1; then
+    readlink -f "$path" 2>/dev/null || printf '%s\n' "$path"
+  else
+    printf '%s\n' "$path"
+  fi
 }
 
 backup_then_rm() {
-  local target
-  target="$1"
-
-  local b
-  b="$target.bak"
-
-  local n=1
-  while [ -e "$b" ]; do
-    b="$target.bak$n"
-    n=$((n+1))
+  local target="$1"
+  
+  [ -e "$target" ] || [ -L "$target" ] || return 0
+  
+  local backup="$target.bak"
+  local counter=1
+  while [ -e "$backup" ]; do
+    backup="$target.bak$counter"
+    counter=$((counter + 1))
   done
-
-  if [ -e "$target" ] || [ -L "$target" ]; then
-    cp -a "$target" "$b" 2>/dev/null || true
+  
+  if cp -a "$target" "$backup" 2>/dev/null; then
     rm -rf "$target"
-    [ -e "$b" ] && info "Backup → $b"
+    info "Backup → $backup"
+  else
+    warn "Could not create backup, removing: $target"
+    rm -rf "$target"
   fi
 }
 
 link_exact() {
-  local src="$1" dest="$2"
-  if [ ! -e "$src" ]; then warn "Missing source $src"; return; fi
+  local src="$1"
+  local dest="$2"
+  
+  if [ ! -e "$src" ]; then
+    warn "Source missing: $src"
+    return 1
+  fi
+  
   mkdir -p "$(dirname "$dest")"
+  
   if [ -L "$dest" ]; then
-    local cur; cur="$(resolve_path "$dest")"
-    if [ "$cur" = "$(resolve_path "$src")" ]; then
-      info "Up-to-date → $dest"
-      return
+    local current_resolved src_resolved
+    current_resolved="$(resolve_path "$dest")"
+    src_resolved="$(resolve_path "$src")"
+    
+    if [ "$current_resolved" = "$src_resolved" ]; then
+      return 0
     fi
   fi
+  
   if [ -e "$dest" ] || [ -L "$dest" ]; then
-    info "Replace → $dest"
     backup_then_rm "$dest"
   fi
+  
   ln -s "$src" "$dest"
-  success "Symlink → $dest"
+  return 0
 }
 
-unlink_if_managed() {
-  local rel="$1" dest="$2"
-  if [ -L "$dest" ]; then
-    local cur want; cur="$(resolve_path "$dest")"; want="$(resolve_path "$DOTFILES_DIR/$rel")"
-    if [ "$cur" = "$want" ]; then
-      rm -f "$dest"
-      success "Unlinked (disabled) → $dest"
-    fi
-  fi
-}
-
-# ====== ENABLED SET (newline list) ======
+# ====== ENABLED SET ======
 enabled_list=""
 
 in_enabled() {
-  # returns 0 if present
   printf '%s' "$enabled_list" | grep -qx -- "$1" || return 1
 }
 
@@ -125,10 +135,14 @@ disable_mod() {
 process_file() {
   local file="$1"
   [ -f "$file" ] || return 0
-  info "Reading modules from $file"
+  
+  info "Reading modules from: $file"
+  
   while IFS= read -r raw || [ -n "$raw" ]; do
-    local line; line="$(trim_comment "$raw")"
+    local line
+    line="$(trim_comment "$raw")"
     [ -z "$line" ] && continue
+    
     case "$line" in
       '!'*) disable_mod "${line#\!}";;
       *)    enable_mod "$line";;
@@ -138,22 +152,28 @@ process_file() {
 
 # ====== START ======
 info "DOTFILES_DIR = $DOTFILES_DIR"
-[ -d "$DOTFILES_DIR" ] || { error "DOTFILES_DIR not found"; exit 1; }
+
+if [ ! -d "$DOTFILES_DIR" ]; then
+  error "DOTFILES_DIR not found"
+  exit 1
+fi
 
 process_file "$DEFAULT_FILE"
 process_file "$LOCAL_FILE"
 
-info "Enabled modules list:"
-printf '%s' "$enabled_list" | sed '/^$/d' | sort | sed 's/^/  - /' || true
+info "Enabled modules:"
+if [ -n "$enabled_list" ]; then
+  printf '%s' "$enabled_list" | sed '/^$/d' | sort | sed 's/^/  - /'
+else
+  echo "  (none)"
+fi
 echo
 
 # ====== PARSE MODULE MAP ======
-# Expand $HOME in destinations safely (no eval of random data)
 MODULE_MAP=""
 while IFS= read -r line || [ -n "$line" ]; do
   [ -z "$line" ] && continue
   IFS='|' read -r name rel dst_tpl <<<"$line"
-  # expand literal $HOME tokens
   dst="${dst_tpl//\$HOME/$HOME}"
   MODULE_MAP+="${name}|${rel}|${dst}"$'\n'
 done <<<"$MODULE_MAP_RAW"
@@ -161,29 +181,45 @@ done <<<"$MODULE_MAP_RAW"
 # ====== APPLY ======
 created=()
 updated=()
+already_ok=()
 unlinked=()
-skipped_missing_src=()
+skipped=()
 
 info "Linking enabled modules…"
 while IFS= read -r row || [ -n "$row" ]; do
   [ -z "$row" ] && continue
   IFS='|' read -r name rel dst <<<"$row"
+  
   if in_enabled "$name"; then
     src="$DOTFILES_DIR/$rel"
+    
     if [ ! -e "$src" ]; then
-      warn "Missing source for enabled module '$name': $src"
-      skipped_missing_src+=("$dst")
+      warn "Missing source for '$name': $src"
+      skipped+=("$dst")
       continue
     fi
-    if [ -L "$dst" ] && [ "$(resolve_path "$dst")" = "$(resolve_path "$src")" ]; then
-      info "Up-to-date → $dst"
-    else
-      if [ -e "$dst" ] || [ -L "$dst" ]; then
-        updated+=("$dst")
-      else
-        created+=("$dst")
+    
+    # Check if already correct
+    if [ -L "$dst" ]; then
+      current_resolved="$(resolve_path "$dst")"
+      src_resolved="$(resolve_path "$src")"
+      
+      if [ "$current_resolved" = "$src_resolved" ]; then
+        already_ok+=("$dst")
+        info "Up-to-date → $dst"
+        continue
       fi
-      link_exact "$src" "$dst"
+    fi
+    
+    # Determine if creating or updating
+    if [ -e "$dst" ] || [ -L "$dst" ]; then
+      updated+=("$dst")
+    else
+      created+=("$dst")
+    fi
+    
+    if link_exact "$src" "$dst"; then
+      success "Symlink → $dst"
     fi
   fi
 done <<<"$MODULE_MAP"
@@ -193,14 +229,16 @@ info "Unlinking disabled modules…"
 while IFS= read -r row || [ -n "$row" ]; do
   [ -z "$row" ] && continue
   IFS='|' read -r name rel dst <<<"$row"
+  
   if ! in_enabled "$name"; then
     if [ -L "$dst" ]; then
-      localcur="$(resolve_path "$dst")"
-      localwant="$(resolve_path "$DOTFILES_DIR/$rel")"
-      if [ "$localcur" = "$localwant" ]; then
+      current_resolved="$(resolve_path "$dst")"
+      expected_resolved="$(resolve_path "$DOTFILES_DIR/$rel")"
+      
+      if [ "$current_resolved" = "$expected_resolved" ]; then
         rm -f "$dst"
         unlinked+=("$dst")
-        success "Unlinked (disabled) → $dst"
+        success "Unlinked → $dst"
       else
         info "Skip (not managed) → $dst"
       fi
@@ -209,7 +247,8 @@ while IFS= read -r row || [ -n "$row" ]; do
 done <<<"$MODULE_MAP"
 
 # ====== EXTRAS ======
-touch "$HOME/.hushlogin" && info "Ensured ~/.hushlogin"
+touch "$HOME/.hushlogin" 2>/dev/null && info "Ensured ~/.hushlogin"
+
 if [ -x "$DOTFILES_DIR/after_setup.sh" ]; then
   info "Running after_setup.sh…"
   "$DOTFILES_DIR/after_setup.sh"
@@ -218,9 +257,36 @@ fi
 # ====== SUMMARY ======
 echo
 log "========== SUMMARY =========="
-[ "${#created[@]}" -gt 0 ]  && { log "Created:"; printf '  + %s\n' "${created[@]}"; }
-[ "${#updated[@]}" -gt 0 ]  && { log "Updated:"; printf '  ~ %s\n' "${updated[@]}"; }
-[ "${#unlinked[@]}" -gt 0 ] && { log "Unlinked:"; printf '  - %s\n' "${unlinked[@]}"; }
-[ "${#skipped_missing_src[@]}" -gt 0 ] && { log "Skipped (missing src):"; printf '  ! %s\n' "${skipped_missing_src[@]}"; }
+
+[ "${#created[@]}" -gt 0 ] && {
+  log "Created (${#created[@]}):"
+  printf '  + %s\n' "${created[@]}"
+}
+
+[ "${#updated[@]}" -gt 0 ] && {
+  log "Updated (${#updated[@]}):"
+  printf '  ~ %s\n' "${updated[@]}"
+}
+
+[ "${#unlinked[@]}" -gt 0 ] && {
+  log "Unlinked (${#unlinked[@]}):"
+  printf '  - %s\n' "${unlinked[@]}"
+}
+
+[ "${#skipped[@]}" -gt 0 ] && {
+  log "Skipped (missing source) (${#skipped[@]}):"
+  printf '  ! %s\n' "${skipped[@]}"
+}
+
+[ "${#already_ok[@]}" -gt 0 ] && {
+  log "Already OK (${#already_ok[@]}):"
+  if [ "${#already_ok[@]}" -le 5 ]; then
+    printf '  = %s\n' "${already_ok[@]}"
+  else
+    printf '  = %s\n' "${already_ok[@]}" | head -5
+    log "  ... and $((${#already_ok[@]} - 5)) more"
+  fi
+}
+
 log "============================="
 success "Done."
