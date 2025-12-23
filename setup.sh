@@ -20,6 +20,7 @@ bat|bat|$HOME/.config/bat
 zellij|zellij|$HOME/.config/zellij
 kitty|kitty|$HOME/.config/kitty
 sway|sway|$HOME/.config/sway
+rofi|rofi|$HOME/.config/rofi
 waybar|waybar|$HOME/.config/waybar
 dunst|dunst|$HOME/.config/dunst
 onedrive|onedrive|$HOME/.config/onedrive
