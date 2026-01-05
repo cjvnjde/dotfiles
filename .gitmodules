@@ -1,57 +1,76 @@
 [submodule "nvim"]
 	path = nvim
 	url = git@github.com:cjvnjde/dotfiles.nvim.git
+	branch = main
 [submodule "tmux"]
 	path = tmux
 	url = git@github.com:cjvnjde/dotfiles.tmux.git
+	branch = main
 [submodule "home"]
 	path = home
 	url = git@github.com:cjvnjde/dotfiles.home.git
+	branch = main
 [submodule "alacritty"]
 	path = alacritty
 	url = git@github.com:cjvnjde/dotfiles.alacritty.git
+	branch = main
 [submodule "scripts"]
 	path = scripts
 	url = git@github.com:cjvnjde/dotfiles.scripts.git
+	branch = main
 [submodule "sway"]
 	path = sway
 	url = git@github.com:cjvnjde/dotfiles.sway.git
+	branch = main
 [submodule "waybar"]
 	path = waybar
 	url = git@github.com:cjvnjde/dotfiles.waybar.git
+	branch = main
 [submodule "lf"]
 	path = lf
 	url = git@github.com:cjvnjde/dotfiles.lf.git
+	branch = main
 [submodule "rofi"]
 	path = rofi
 	url = git@github.com:cjvnjde/dotfiles.rofi.git
+	branch = main
 [submodule "kitty"]
 	path = kitty
 	url = git@github.com:cjvnjde/dotfiles.kitty.git
+	branch = main
 [submodule "dunst"]
 	path = dunst
 	url = git@github.com:cjvnjde/dotfiles.dunst.git
+	branch = main
 [submodule "onedrive"]
 	path = onedrive
 	url = git@github.com:cjvnjde/dotfiles.onedrive.git
+	branch = main
 [submodule "atuin"]
 	path = atuin 
 	url = git@github.com:cjvnjde/dotfiles.atuin.git
+	branch = main
 [submodule "bat"]
 	path = bat
 	url = git@github.com:cjvnjde/dotfiles.bat.git
+	branch = main
 [submodule "zillij"]
 	path = zellij
 	url = git@github.com:cjvnjde/dotfiles.zellij.git
+	branch = main
 [submodule "hyprland"]
 	path = hyprland
 	url = git@github.com:cjvnjde/dotfiles.hyprland.git
+	branch = main
 [submodule "ghostty"]
 	path = ghostty
 	url = git@github.com:cjvnjde/dotfiles.ghostty.git
+	branch = main
 [submodule "ghosty"]
 	path = ghosty
 	url = git@github.com:cjvnjde/dotfiles.ghosty.git
+	branch = main
 [submodule "niri"]
 	path = niri
 	url = git@github.com:cjvnjde/dotfiles.niri.git
+	branch = main
