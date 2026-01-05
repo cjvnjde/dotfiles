@@ -1,19 +1,28 @@
 #!/bin/bash
 
+IGNORE_DIR="test"
+
 echo "Updating main repository..."
 git pull
 
 echo "Updating submodules..."
 git submodule update --init --recursive
 
-# Get the current branch of the main repository
 main_branch=$(git rev-parse --abbrev-ref HEAD)
 echo "Main repository branch: $main_branch"
 
 export main_branch=$main_branch
+export IGNORE_DIR=$IGNORE_DIR
 
-echo "Updating and checking out submodules to matching branch if possible, otherwise to main..."
+echo "Updating and checking out submodules (ignoring '$IGNORE_DIR')..."
+
 git submodule foreach --recursive '
+    # Check if the submodule path starts with the ignored directory
+    if [[ "$path" == "$IGNORE_DIR"* ]]; then
+        echo "  [Skipping] Submodule $name is inside ignored folder: $IGNORE_DIR"
+        exit 0
+    fi
+
     git fetch origin
 
     if git show-ref -q --verify refs/remotes/origin/"$main_branch"; then
@@ -35,5 +44,4 @@ git submodule foreach --recursive '
     fi
 '
 
-echo "All submodules updated and checked out to the $main_branch branch if possible, otherwise main."
-
+echo "All submodules updated (excluding '$IGNORE_DIR')."
