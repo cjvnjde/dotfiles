@@ -52,6 +52,21 @@ To use this configuration, you'll need to install the following software.
   - `Dunst`: For notifications.
   - `grim` & `slurp`: For screenshots.
 
+### Arch Linux
+
+```bash
+sudo pacman -Syu zsh git
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+sudo pacman -Syu atuin bat eza fzf git-delta neovim ripgrep zoxide jq
+curl https://mise.run | sh
+```
+
+```bash
+sudo pacman -Syu dunst libnotify sway swaylock swaybg swayidle waybar rofi rofi-calc wl-clipboard wf-recorder grim slurp
+```
+
 -----
 
 ## Installation
@@ -62,45 +77,17 @@ To use this configuration, you'll need to install the following software.
     git clone --recurse-submodules git@github.com:cjvnjde/dotfiles.git $HOME/dotfiles
     ```
 
-2. **Run the setup script** to create the necessary symbolic links:
-
-    ```bash
-    cd $HOME/dotfiles/setup.sh
-    ```
-
-### Customization
-
-You can control which configurations are installed by editing `$HOME/.dotfiles/.modules`. For machine-specific overrides, create a file at `$HOME/.dotfiles/.modules.local` (this file is ignored by Git).
-
-For example, to disable `sway`, add `!sway` to your `.modules.local` file.
-
-```
-!sway
-```
-
-#### Alacritty
-
-The main `alacritty.toml` imports an `overrides.toml` file, which is ignored by Git. You can create `$HOME/dotfiles/alacritty/overrides.toml` to set options that apply only to the current machine
-
-```toml
-# $HOME/dotfiles/alacritty/overrides.toml
-
-[window]
-decorations = "Full"
-```
-
-#### Zsh
-
-The `.zshrc` file will automatically source `$HOME/.zshrc_local` if it exists. This is the ideal place for private aliases, environment variables, or sourcing scripts that are only present on one machine.
+2. You can control which configurations are installed by creating `$HOME/dotfiles/.modules`.
 
 ```bash
-# ~/.zshrc_local
-
-alias work-project="cd ~/projects/work/my-secret-project"
-export GITHUB_TOKEN="your_token_here"
+cp .modules.example .modules
 ```
 
------
+1. **Run the setup script** to create the necessary symbolic links:
+
+    ```bash
+    sh $HOME/dotfiles/setup.sh
+    ```
 
 ## Management
 
