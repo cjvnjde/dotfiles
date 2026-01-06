@@ -43,6 +43,7 @@ To use this configuration, you'll need to install the following software.
   - [jq](https://jqlang.org/): A command-line JSON parser.
   - [mise](https://mise.jdx.dev/): Dev tools/runtimes manager.
   - [zellij](https://zellij.dev/): A terminal workspace.
+  - [tree-sitter-cli](https://github.com/tree-sitter/tree-sitter/blob/master/crates/cli/README.md): The tree-sitter cli is required for neovim configuration
 
 - **GUI (Linux/Wayland)**:
 
@@ -65,6 +66,10 @@ curl https://mise.run | sh
 
 ```bash
 sudo pacman -Syu dunst libnotify sway swaylock swaybg swayidle waybar rofi rofi-calc wl-clipboard wf-recorder grim slurp
+```
+
+```bash
+cargo install --locked tree-sitter-cli
 ```
 
 -----
