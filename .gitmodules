@@ -42,10 +42,6 @@
 	path = dunst
 	url = git@github.com:cjvnjde/dotfiles.dunst.git
 	branch = main
-[submodule "onedrive"]
-	path = onedrive
-	url = git@github.com:cjvnjde/dotfiles.onedrive.git
-	branch = main
 [submodule "atuin"]
 	path = atuin 
 	url = git@github.com:cjvnjde/dotfiles.atuin.git
