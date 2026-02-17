@@ -74,12 +74,10 @@ export COUNTER_FILE
 log_head "Updating submodules (ignoring: ${IGNORE_DIRS[*]})"
 
 git submodule foreach --recursive '
-    # ── helper: should this path be ignored? ──
     should_ignore() {
         local sm_path="$1"
         IFS="|" read -ra dirs <<< "$IGNORE_DIRS_JOINED"
         for dir in "${dirs[@]}"; do
-            # Match: exact name, leading component, or anywhere in path
             if [[ "$sm_path" == "$dir"      ||
                   "$sm_path" == "$dir/"*     ||
                   "$sm_path" == *"/$dir"     ||
@@ -90,9 +88,7 @@ git submodule foreach --recursive '
         return 1
     }
 
-    # ── helper: increment counter ──
     bump() {
-        # $1 = field index (1=updated 2=skipped 3=failed)
         read -r u s f < "$COUNTER_FILE"
         case $1 in
             1) u=$((u+1)) ;; 2) s=$((s+1)) ;; 3) f=$((f+1)) ;;
@@ -100,17 +96,15 @@ git submodule foreach --recursive '
         echo "$u $s $f" > "$COUNTER_FILE"
     }
 
-    # ── ignore check ──
     if should_ignore "$path"; then
-        echo -e "\033[0;33m[SKIP]\033[0m  $name  (inside ignored folder)"
+        printf "\033[0;33m[SKIP]\033[0m  %s  (inside ignored folder)\n" "$name"
         bump 2
         exit 0
     fi
 
-    echo -e "\033[0;34m[INFO]\033[0m  Updating $name ($path) ..."
+    printf "\033[0;34m[INFO]\033[0m  Updating %s (%s) ...\n" "$name" "$path"
     git fetch origin --prune
 
-    # Determine the best branch: prefer $main_branch, fall back to main, then default remote HEAD
     target_branch=""
     for candidate in "$main_branch" "main" "master"; do
         if git show-ref -q --verify "refs/remotes/origin/$candidate"; then
@@ -120,22 +114,21 @@ git submodule foreach --recursive '
     done
 
     if [ -z "$target_branch" ]; then
-        # Last resort: whatever HEAD points to on origin
         target_branch=$(git remote show origin 2>/dev/null | sed -n "s/.*HEAD branch: //p")
     fi
 
     if [ -z "$target_branch" ]; then
-        echo -e "\033[0;31m[ERR]\033[0m   Could not determine a target branch for $name"
+        printf "\033[0;31m[ERR]\033[0m   Could not determine a target branch for %s\n" "$name"
         bump 3
-        exit 0   # do not abort the whole loop
+        exit 0
     fi
 
     if git checkout "$target_branch" 2>/dev/null; then
         git reset --hard "origin/$target_branch" 2>/dev/null
-        echo -e "\033[0;32m[OK]\033[0m    $name → $target_branch"
+        printf "\033[0;32m[OK]\033[0m    %s → %s\n" "$name" "$target_branch"
         bump 1
     else
-        echo -e "\033[0;31m[ERR]\033[0m   Failed to checkout $target_branch in $name"
+        printf "\033[0;31m[ERR]\033[0m   Failed to checkout %s in %s\n" "$target_branch" "$name"
         bump 3
     fi
 '
