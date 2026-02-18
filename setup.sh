@@ -27,6 +27,7 @@ onedrive|onedrive|$HOME/.config/onedrive
 hyprland|hyprland|$HOME/.config/hypr
 ghostty|ghostty|$HOME/.config/ghostty
 niri|niri|$HOME/.config/niri
+tmux|tmux|$HOME/.config/tmux
 EOF
 
 DEFAULT_FILE="$DOTFILES_DIR/.modules"
