@@ -28,6 +28,7 @@ To use this configuration, you'll need to install the following software.
   - `zsh` & [oh-my-zsh](https://ohmyz.sh/): The primary shell environment.
   - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)
+  - [zsh-defer](https://github.com/romkatv/zsh-defer): Deferred execution for faster shell startup.
   - [Nerd Fonts](https://www.nerdfonts.com/): Required for icons (this config uses **FiraCode Nerd Font**).
 
 - **Terminal Tools**:
@@ -60,6 +61,7 @@ sudo pacman -Syu zsh git
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/romkatv/zsh-defer ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-defer
 sudo pacman -Syu atuin bat eza fzf git-delta neovim ripgrep zoxide jq
 curl https://mise.run | sh
 ```
