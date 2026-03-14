@@ -10,6 +10,7 @@ read -r -d '' MODULE_MAP_RAW <<'EOF' || true
 nvim|nvim|$HOME/.config/nvim
 alacritty|alacritty|$HOME/.config/alacritty
 zshrc|home/.zshrc|$HOME/.zshrc
+opencode|home/opencode.json|$HOME/.config/opencode/opencode.json
 ideavim|home/.ideavimrc|$HOME/.ideavimrc
 wezterm|home/.wezterm.lua|$HOME/.wezterm.lua
 git|home/.gitconfig|$HOME/.gitconfig
