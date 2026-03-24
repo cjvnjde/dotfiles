@@ -1,11 +1,6 @@
-downgrade
-lazydocker
-lazydocker-debug
-opencode-ai-bin
-opencode-ai-bin-debug
-postman-bin
-slack-desktop
-ttf-zed-plex-mono-git
+discord_arch_electron
+nsis
+ungoogled-chromium-bin
+ungoogled-chromium-bin-debug
 yay
 yay-debug
-zoom
