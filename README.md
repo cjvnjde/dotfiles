@@ -84,17 +84,23 @@ cargo install --locked tree-sitter-cli
     git clone --recurse-submodules git@github.com:cjvnjde/dotfiles.git $HOME/dotfiles
     ```
 
-2. You can control which configurations are installed by creating `$HOME/dotfiles/.modules`.
-
-```bash
-cp .modules.example .modules
-```
-
-1. **Run the setup script** to create the necessary symbolic links:
+2. Choose which modules to enable:
 
     ```bash
-    sh $HOME/dotfiles/setup.sh
+    cp .modules.example .modules
     ```
+
+3. Pick the active Waybar profile in `waybar/target` (or `waybar/target.local`).
+   Supported values: `sway`, `hyprland`, `niri`.
+   Re-run setup after changing it.
+
+4. Run the setup script:
+
+    ```bash
+    bash $HOME/dotfiles/setup.sh
+    ```
+
+The setup is module-based: each module owns its own `setup.sh`, and the root `setup.sh` only reads `.modules` and calls them.
 
 ## Management
 
