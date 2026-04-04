@@ -26,10 +26,6 @@
 	path = waybar
 	url = git@github.com:cjvnjde/dotfiles.waybar.git
 	branch = main
-[submodule "lf"]
-	path = lf
-	url = git@github.com:cjvnjde/dotfiles.lf.git
-	branch = main
 [submodule "rofi"]
 	path = rofi
 	url = git@github.com:cjvnjde/dotfiles.rofi.git
@@ -45,10 +41,6 @@
 [submodule "atuin"]
 	path = atuin 
 	url = git@github.com:cjvnjde/dotfiles.atuin.git
-	branch = main
-[submodule "bat"]
-	path = bat
-	url = git@github.com:cjvnjde/dotfiles.bat.git
 	branch = main
 [submodule "zillij"]
 	path = zellij
