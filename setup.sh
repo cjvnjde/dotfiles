@@ -31,6 +31,7 @@ source "$ROOT_DIR/setup/lib.sh"
 trap 'action_failed "$LINENO" "$BASH_COMMAND"' ERR
 
 export DOTFILES_DIR="$ROOT_DIR"
+exec 3<&0
 
 enabled_list=""
 
@@ -127,9 +128,9 @@ while IFS='|' read -r name script || [ -n "${name:-}" ]; do
 
   if in_enabled "$name"; then
     info "Enable $name"
-    bash "$script" enable
+    bash "$script" enable <&3
   else
-    bash "$script" disable
+    bash "$script" disable <&3
   fi
 done <<< "$MODULE_SCRIPTS"
 
@@ -140,4 +141,5 @@ if [ -f "$ROOT_DIR/after_setup.sh" ]; then
   bash "$ROOT_DIR/after_setup.sh"
 fi
 
+exec 3<&-
 success "Done."
