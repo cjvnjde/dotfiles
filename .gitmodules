@@ -62,3 +62,6 @@
 	path = niri
 	url = git@github.com:cjvnjde/dotfiles.niri.git
 	branch = main
+[submodule "bat"]
+	path = bat
+	url = git@github.com:cjvnjde/dotfiles.bat.git
