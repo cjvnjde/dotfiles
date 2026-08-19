@@ -168,7 +168,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 **Custom modules** — some modules need more than a single symlink and have custom logic:
 
 - `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and symlinks individual scripts into it (including `ccode` and `clipboard-code` aliases).
-- `agents/setup.sh` — symlinks each personal skill from `agents/skills/` into both `~/.claude/skills/` and `~/.agents/skills/` without replacing unrelated skills.
+- `agents/setup.sh` — uses `npx skills@latest` to install personal skills globally for Pi, Codex, Claude Code, Zed, and universal agents.
 - `waybar/setup.sh` — symlinks shared files (`style.css`, `scripts/`) plus the active config based on `waybar/target`.
 
 ### Available Modules
@@ -185,7 +185,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `wezterm`    | `~/.wezterm.lua`                   |                                |
 | `opencode`   | `~/.config/opencode/opencode.json` |                                |
 | `scripts`    | `~/.local/scripts/*`               | Individual script symlinks     |
-| `agents`     | `~/.claude/skills/*`, `~/.agents/skills/*` | Personal skill symlinks; conflicts skipped |
+| `agents`     | Global agent skill directories              | Managed with `npx skills@latest` for Pi, Codex, Claude Code, Zed, and universal agents |
 | `atuin`      | `~/.config/atuin`                  |                                |
 | `bat`        | `~/.config/bat`                    |                                |
 | `zellij`     | `~/.config/zellij`                 |                                |
@@ -239,7 +239,7 @@ Put each user-level skill in its own directory:
 agents/skills/<skill-name>/SKILL.md
 ```
 
-Enable the `agents` module and run `bash setup.sh`. Each skill directory is linked individually, so existing skills from other sources remain in place. See [`agents/README.md`](agents/README.md) for conflict and removal behavior.
+Enable the `agents` module and run `bash setup.sh`. The module passes the local skill collection to `npx skills@latest`, which refreshes the global installs for Pi, Codex, Claude Code, Zed, and universal agents. See [`agents/README.md`](agents/README.md) for installation and removal behavior.
 
 -----
 
@@ -278,6 +278,6 @@ The root `setup.sh` discovers modules automatically — no registration step nee
     bash setup.sh
     ```
 
-- **Conflicts:** Most modules back up an existing destination to `<path>.bak` before linking. The `agents` module instead skips conflicting skill names so third-party skills remain untouched.
+- **Conflicts:** Most modules back up an existing destination to `<path>.bak` before linking. The `agents` module delegates same-name skill handling to the `skills` CLI; unrelated skill names remain untouched.
 
 - **Submodules:** Most modules are git submodules. Changes to module setup scripts need to be committed inside the submodule first, then the parent repo pointer updated.
