@@ -48,3 +48,7 @@
 [submodule "ly"]
 	path = ly
 	url = git@github.com:cjvnjde/dotfiles.ly.git
+[submodule "quickshell"]
+	path = quickshell
+	url = git@github.com:cjvnjde/dotfiles.quickshell.git
+	branch = main
