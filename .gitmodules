@@ -18,25 +18,9 @@
 	path = scripts
 	url = git@github.com:cjvnjde/dotfiles.scripts.git
 	branch = main
-[submodule "sway"]
-	path = sway
-	url = git@github.com:cjvnjde/dotfiles.sway.git
-	branch = main
-[submodule "waybar"]
-	path = waybar
-	url = git@github.com:cjvnjde/dotfiles.waybar.git
-	branch = main
-[submodule "rofi"]
-	path = rofi
-	url = git@github.com:cjvnjde/dotfiles.rofi.git
-	branch = main
 [submodule "kitty"]
 	path = kitty
 	url = git@github.com:cjvnjde/dotfiles.kitty.git
-	branch = main
-[submodule "dunst"]
-	path = dunst
-	url = git@github.com:cjvnjde/dotfiles.dunst.git
 	branch = main
 [submodule "atuin"]
 	path = atuin 
@@ -54,14 +38,6 @@
 	path = ghostty
 	url = git@github.com:cjvnjde/dotfiles.ghostty.git
 	branch = main
-[submodule "ghosty"]
-	path = ghosty
-	url = git@github.com:cjvnjde/dotfiles.ghosty.git
-	branch = main
-[submodule "niri"]
-	path = niri
-	url = git@github.com:cjvnjde/dotfiles.niri.git
-	branch = main
 [submodule "bat"]
 	path = bat
 	url = git@github.com:cjvnjde/dotfiles.bat.git
@@ -69,3 +45,6 @@
 	path = agents
 	url = git@github.com:cjvnjde/dotfiles.agents.git
 	branch = main
+[submodule "ly"]
+	path = ly
+	url = git@github.com:cjvnjde/dotfiles.ly.git

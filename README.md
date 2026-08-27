@@ -2,6 +2,30 @@
 
 A personal collection of dotfiles for macOS and Linux, designed for a consistent and productive development environment. This setup is modular, managed by a simple setup script, and consistently themed with **Catppuccin Mocha**.
 
+## Repositories
+
+- [dotfiles](https://github.com/cjvnjde/dotfiles)
+- [dotfiles.nvim](https://github.com/cjvnjde/dotfiles.nvim)
+- [dotfiles.agents](https://github.com/cjvnjde/dotfiles.agents)
+- [dotfiles.home](https://github.com/cjvnjde/dotfiles.home)
+- [dotfiles.sway](https://github.com/cjvnjde/dotfiles.sway)
+- [dotfiles.scripts](https://github.com/cjvnjde/dotfiles.scripts)
+- [dotfiles.ghostty](https://github.com/cjvnjde/dotfiles.ghostty)
+- [dotfiles.tmux](https://github.com/cjvnjde/dotfiles.tmux)
+- [dotfiles.waybar](https://github.com/cjvnjde/dotfiles.waybar)
+- [dotfiles.zellij](https://github.com/cjvnjde/dotfiles.zellij)
+- [dotfiles.atuin](https://github.com/cjvnjde/dotfiles.atuin)
+- [dotfiles.rofi](https://github.com/cjvnjde/dotfiles.rofi)
+- [dotfiles.bat](https://github.com/cjvnjde/dotfiles.bat)
+- [dotfiles.alacritty](https://github.com/cjvnjde/dotfiles.alacritty)
+- [dotfiles.dunst](https://github.com/cjvnjde/dotfiles.dunst)
+- [dotfiles.hyprland](https://github.com/cjvnjde/dotfiles.hyprland)
+- [dotfiles.kitty](https://github.com/cjvnjde/dotfiles.kitty)
+- [dotfiles.niri](https://github.com/cjvnjde/dotfiles.niri)
+- [dotfiles.nvim2](https://github.com/cjvnjde/dotfiles.nvim2)
+- [dotfiles.lf](https://github.com/cjvnjde/dotfiles.lf)
+- [dotfiles.onedrive](https://github.com/cjvnjde/dotfiles.onedrive)
+
 -----
 
 ## Software Overview
@@ -121,13 +145,7 @@ sudo pacman -S pipewire wireplumber bluez bluez-utils bluetui
 
     Edit `.modules` to keep only the modules you need. Lines starting with `!` disable a previously enabled module (useful in `.modules.local`).
 
-3. **Set the Waybar target** (only needed if you use Waybar):
-
-    ```bash
-    echo "sway" > waybar/target        # or hyprland, niri
-    ```
-
-4. **Run the setup script:**
+3. **Run the setup script:**
 
     ```bash
     bash setup.sh
@@ -149,11 +167,11 @@ Each module owns its own setup logic — the root script has no hardcoded paths 
 
 ### Module Types
 
-**Directory modules** — most modules are entire config directories (e.g. `nvim`, `sway`, `alacritty`). They contain a `setup.sh` that symlinks the directory to the right place:
+**Directory modules** — most modules are entire config directories (e.g. `nvim`, `hyprland`, `alacritty`). They contain a `setup.sh` that symlinks the directory to the right place:
 
 ```
 alacritty/setup.sh   → symlinks alacritty/ to ~/.config/alacritty
-sway/setup.sh        → symlinks sway/     to ~/.config/sway
+hyprland/setup.sh    → symlinks hyprland/ to ~/.config/hypr
 nvim/setup.sh        → symlinks nvim/     to ~/.config/nvim
 ```
 
@@ -169,7 +187,6 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 
 - `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and symlinks individual scripts into it (including `ccode` and `clipboard-code` aliases).
 - `agents/setup.sh` — uses `npx skills@latest` to install personal skills globally for Pi, Codex, Claude Code, Zed, and universal agents.
-- `waybar/setup.sh` — symlinks shared files (`style.css`, `scripts/`) plus the active config based on `waybar/target`.
 
 ### Available Modules
 
@@ -190,27 +207,8 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `bat`        | `~/.config/bat`                    |                                |
 | `zellij`     | `~/.config/zellij`                 |                                |
 | `tmux`       | `~/.config/tmux`                   |                                |
-| `sway`       | `~/.config/sway`                   | See [sway/README.md](sway/README.md) |
 | `hyprland`   | `~/.config/hypr`                   |                                |
-| `niri`       | `~/.config/niri`                   |                                |
-| `rofi`       | `~/.config/rofi`                   |                                |
-| `waybar`     | `~/.config/waybar`                 | Uses `waybar/target` to pick config |
-| `dunst`      | `~/.config/dunst`                  |                                |
-
-### Waybar
-
-Waybar has per-environment configs (`sway/`, `hyprland/`, `niri/`) that are all symlinked into `~/.config/waybar/`. The active one is selected via a `config.jsonc` symlink based on the `waybar/target` file.
-
-**Switch the active config:**
-
-```bash
-echo "hyprland" > waybar/target   # switch to hyprland config
-bash setup.sh                     # re-run to apply
-```
-
-Supported targets: `sway`, `hyprland`, `niri`.
-
-For machine-specific overrides, create `waybar/target.local` instead — it takes priority and is git-ignored.
+| `ly`         | `/etc/ly/config.ini`                | Requires root access           |
 
 ### Local Overrides
 
@@ -219,14 +217,13 @@ Several config files support machine-specific overrides that are git-ignored:
 | File                  | Purpose                                           |
 | --------------------- | ------------------------------------------------- |
 | `.modules.local`      | Override enabled modules (supports `!module` to disable) |
-| `waybar/target.local` | Override the active Waybar environment             |
 | `~/.zshrc_local`      | Private aliases, env vars, machine-specific shell config |
 
-**Example `.modules.local`** — enable everything from `.modules` but drop sway and add hyprland:
+**Example `.modules.local`** — enable everything from `.modules` but drop Alacritty and add Kitty:
 
 ```
-!sway
-hyprland
+!alacritty
+kitty
 ```
 
 -----
