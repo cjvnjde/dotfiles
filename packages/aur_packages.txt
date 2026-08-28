@@ -1,6 +1,0 @@
-discord_arch_electron
-nsis
-ungoogled-chromium-bin
-ungoogled-chromium-bin-debug
-yay
-yay-debug
