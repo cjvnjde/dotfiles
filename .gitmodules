@@ -52,3 +52,7 @@
 	path = quickshell
 	url = git@github.com:cjvnjde/dotfiles.quickshell.git
 	branch = main
+[submodule "sbx"]
+	path = sbx
+	url = git@github.com:cjvnjde/dotfiles.sbx.git
+	branch = main
