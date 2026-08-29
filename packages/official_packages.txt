@@ -70,5 +70,6 @@ wireless-regdb
 wireplumber
 wl-clipboard
 xdg-desktop-portal-hyprland
+zenity
 zoxide
 zsh
