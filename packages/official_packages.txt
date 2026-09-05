@@ -69,6 +69,7 @@ vulkan-radeon
 wireless-regdb
 wireplumber
 wl-clipboard
+xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 zenity
 zoxide
