@@ -161,9 +161,30 @@ The setup is fully module-based. The root `setup.sh` does three things:
 
 1. Reads `.modules` (and `.modules.local`) to determine which modules are enabled.
 2. Discovers all module setup scripts automatically.
-3. Calls each module's `setup.sh` with `enable` or `disable`.
+3. Calls independent modules' `setup.sh` scripts concurrently with `enable` or `disable`.
 
 Each module owns its own setup logic — the root script has no hardcoded paths or destinations.
+
+### Parallel Execution
+
+Both `setup.sh` and `update.sh` default to one worker per online CPU (or four if the CPU count is unavailable). Set `DOTFILES_JOBS` to a positive integer to override the limit:
+
+```bash
+DOTFILES_JOBS=8 bash setup.sh
+DOTFILES_JOBS=8 bash update.sh
+```
+
+Use `DOTFILES_JOBS=1` to disable concurrency. For setup, this also restores foreground execution in module discovery order.
+
+Setup runs `tmux` and `ly` in a separate foreground phase after all background modules succeed, because they can prompt or request `sudo` access. Override the space-separated list when adding interactive modules or modules that share resources:
+
+```bash
+DOTFILES_SERIAL_MODULES="tmux ly my-module" bash setup.sh
+```
+
+An empty `DOTFILES_SERIAL_MODULES` allows every module to run in the background; use it only when none require terminal input or exclusive access. Background output streams live and may interleave. Setup waits for all workers and only runs `after_setup.sh` if every module succeeds.
+
+Update pulls the main repository first, initializes submodules with parallel Git jobs, then updates sibling submodules concurrently. Parent updates finish before their nested submodules are discovered and updated. The summary reports updated, skipped, and failed counts; any failure produces a nonzero exit status. Interrupting either script terminates active background workers.
 
 ### Module Types
 
@@ -271,9 +292,11 @@ The root `setup.sh` discovers modules automatically — no registration step nee
 - **Update from remote:**
 
     ```bash
-    cd ~/dotfiles && git pull --recurse-submodules
+    cd ~/dotfiles && bash update.sh
     bash setup.sh
     ```
+
+    `update.sh` checks out each non-ignored submodule's selected branch and hard-resets it to its origin branch. This discards tracked local changes inside those submodules; commit or stash them before updating.
 
 - **Conflicts:** Most modules back up an existing destination to `<path>.bak` before linking. The `agents` module delegates same-name skill handling to the `skills` CLI; unrelated skill names remain untouched.
 

@@ -28,7 +28,9 @@ action_failed() {
 }
 
 source "$ROOT_DIR/setup/lib.sh"
+source "$ROOT_DIR/setup/parallel.sh"
 trap 'action_failed "$LINENO" "$BASH_COMMAND"' ERR
+parallel_init
 
 export DOTFILES_DIR="$ROOT_DIR"
 exec 3<&0
@@ -123,16 +125,54 @@ while IFS= read -r name || [ -n "${name:-}" ]; do
   fi
 done <<< "$(printf '%s' "$enabled_list" | sed '/^$/d' | sort -u)"
 
+run_module() {
+  local name="$1"
+  local script="$2"
+  local action=disable
+  local status
+
+  if in_enabled "$name"; then
+    action=enable
+  fi
+
+  info "$action $name"
+  if bash "$script" "$action" <&3; then
+    return 0
+  else
+    status=$?
+    error "Module $name failed (status $status)"
+    return "$status"
+  fi
+}
+
+serial_modules="${DOTFILES_SERIAL_MODULES-tmux ly}"
+serial_scripts=""
+
 while IFS='|' read -r name script || [ -n "${name:-}" ]; do
   [ -n "${name:-}" ] || continue
 
-  if in_enabled "$name"; then
-    info "Enable $name"
-    bash "$script" enable <&3
-  else
-    bash "$script" disable <&3
+  if [ "$PARALLEL_JOBS" -eq 1 ]; then
+    run_module "$name" "$script"
+    continue
   fi
+
+  case " $serial_modules " in
+    *" $name "*)
+      serial_scripts="${serial_scripts}${name}|${script}"$'\n'
+      ;;
+    *)
+      parallel_run "$name" run_module "$name" "$script" <&3
+      ;;
+  esac
 done <<< "$MODULE_SCRIPTS"
+
+parallel_wait
+
+# Interactive modules must own the terminal, with no background workers left.
+while IFS='|' read -r name script || [ -n "${name:-}" ]; do
+  [ -n "${name:-}" ] || continue
+  run_module "$name" "$script"
+done <<< "$serial_scripts"
 
 touch "$HOME/.hushlogin" 2>/dev/null && info "Ensured ~/.hushlogin"
 
