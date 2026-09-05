@@ -27,7 +27,6 @@ gnome-keyring
 grim
 gvfs
 hyprland
-hyprpaper
 hyprpolkitagent
 iwd
 jq
