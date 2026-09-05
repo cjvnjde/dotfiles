@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
 parallel_init() {
-  PARALLEL_JOBS="${DOTFILES_JOBS-$(getconf _NPROCESSORS_ONLN 2>/dev/null || printf '4')}"
-  if [[ ! "$PARALLEL_JOBS" =~ ^[1-9][0-9]*$ ]] ||
-    ! [ "$PARALLEL_JOBS" -le 2147483647 ] 2>/dev/null; then
-    printf '[ERR ] DOTFILES_JOBS must be a positive integer (at most 2147483647).\n' >&2
-    return 1
-  fi
-
   parallel_pids=()
   parallel_labels=()
   parallel_head=0
@@ -33,10 +26,6 @@ parallel_run() {
   local label="$1"
   local monitor_enabled=0
   shift
-
-  if [ "$((parallel_tail - parallel_head))" -ge "$PARALLEL_JOBS" ]; then
-    parallel_reap
-  fi
 
   # Give each worker a process group so cancellation also reaches its commands.
   case "$-" in *m*) monitor_enabled=1 ;; esac

@@ -44,24 +44,14 @@ log_head "Updating main repository"
 main_branch=$(git rev-parse --abbrev-ref HEAD)
 log_info "Current branch: ${BOLD}$main_branch${RESET}"
 
-if ! git pull; then
+if ! git pull --no-recurse-submodules; then
     log_err "Failed to pull main repository."
     exit 1
 fi
 log_ok "Main repository up to date."
 
 # ──────────────────────────────────────────────
-# Step 2 — Init submodules
-# ──────────────────────────────────────────────
-log_head "Initialising submodules"
-if ! git submodule update --init --recursive --jobs "$PARALLEL_JOBS"; then
-    log_err "Failed to initialise submodules."
-    exit 1
-fi
-log_ok "Submodules initialised."
-
-# ──────────────────────────────────────────────
-# Step 3 — Update submodules in parent-first waves
+# Step 2 — Update submodules in parent-first waves
 # ──────────────────────────────────────────────
 should_ignore() {
     local sm_path="$1"
@@ -78,11 +68,19 @@ should_ignore() {
 }
 
 update_submodule() (
-    local directory="$1"
-    local sm_path="$2"
-    local name="$3"
-    local status_file="$4"
-    local target_branch="" candidate
+    local parent="$1"
+    local child="$2"
+    local sm_path="$3"
+    local name="$4"
+    local status_file="$5"
+    local directory="$parent/$child"
+
+    if [ ! -e "$directory/.git" ]; then
+        if ! git -C "$parent" -c submodule.recurse=false -c fetch.recurseSubmodules=false submodule update -- "$child"; then
+            log_err "Failed to initialise $sm_path."
+            return 1
+        fi
+    fi
 
     if should_ignore "$sm_path"; then
         log_skip "$sm_path (inside ignored folder)"
@@ -95,40 +93,17 @@ update_submodule() (
         log_err "Failed to enter $sm_path."
         return 1
     fi
-    if ! git fetch origin --prune; then
-        log_err "Failed to fetch $sm_path."
+    if ! git -c submodule.recurse=false switch main; then
+        log_err "Failed to switch $sm_path to main."
         return 1
     fi
-
-    for candidate in "$main_branch" "main" "master"; do
-        if git show-ref -q --verify "refs/remotes/origin/$candidate"; then
-            target_branch="$candidate"
-            break
-        fi
-    done
-
-    if [ -z "$target_branch" ]; then
-        if ! target_branch=$(git remote show origin 2>/dev/null | sed -n "s/.*HEAD branch: //p"); then
-            log_err "Failed to discover the origin HEAD branch for $sm_path."
-            return 1
-        fi
-    fi
-    if [ -z "$target_branch" ]; then
-        log_err "Could not determine a target branch for $sm_path."
-        return 1
-    fi
-
-    if ! git checkout "$target_branch" 2>/dev/null; then
-        log_err "Failed to checkout $target_branch in $sm_path."
-        return 1
-    fi
-    if ! git reset --hard "origin/$target_branch" 2>/dev/null; then
-        log_err "Failed to reset $sm_path to origin/$target_branch."
+    if ! git -c submodule.recurse=false pull --no-recurse-submodules; then
+        log_err "Failed to pull $sm_path."
         return 1
     fi
 
     printf 'updated\n' > "$status_file"
-    log_ok "$sm_path → $target_branch"
+    log_ok "$sm_path → main"
 )
 
 log_head "Updating submodules (ignoring: ${IGNORE_DIRS[*]})"
@@ -142,25 +117,44 @@ update_failed=0
 
 while [ "${#parents[@]}" -gt 0 ]; do
     next_parents=()
+    next_status_files=()
     next_count=0
     for parent in "${parents[@]}"; do
-        # Enumerate only immediate children, after this parent has finished updating.
-        # Git supplies these variables in the child shell.
-        # shellcheck disable=SC2016
-        if ! git -C "$parent" submodule foreach --quiet 'printf "%s\000%s\000" "$name" "$sm_path"' > "$status_dir/children"; then
+        if [ ! -e "$parent/.gitmodules" ]; then
+            continue
+        fi
+        # Register all siblings before workers can clone them or touch shared config.
+        if ! git -C "$parent" submodule init; then
+            log_err "Failed to register submodules in $parent."
+            update_failed=1
+            continue
+        fi
+        # An empty config has no children; malformed or unreadable configs are errors.
+        if git config --null --file "$parent/.gitmodules" --get-regexp '^submodule\..*\.path$' > "$status_dir/children"; then
+            :
+        else
+            config_status=$?
+            if [ "$config_status" -eq 1 ]; then
+                continue
+            fi
             log_err "Failed to discover submodules in $parent."
             update_failed=1
             continue
         fi
-        while IFS= read -r -d '' name <&3 && IFS= read -r -d '' child <&3; do
+        while IFS= read -r -d '' record <&3; do
+            key="${record%%$'\n'*}"
+            child="${record#*$'\n'}"
+            name="${key#submodule.}"
+            name="${name%.path}"
             directory="$parent/$child"
             sm_path="${directory#"$repo_root"/}"
             worker_count=$((worker_count + 1))
             status_file="$status_dir/$worker_count"
             # A worker must explicitly record success; early exits remain failures.
             printf 'failed\n' > "$status_file"
-            parallel_run "$sm_path" update_submodule "$directory" "$sm_path" "$name" "$status_file" 3<&-
+            parallel_run "$sm_path" update_submodule "$parent" "$child" "$sm_path" "$name" "$status_file" 3<&-
             next_parents[next_count]="$directory"
+            next_status_files[next_count]="$status_file"
             next_count=$((next_count + 1))
         done 3< "$status_dir/children"
     done
@@ -170,11 +164,17 @@ while [ "${#parents[@]}" -gt 0 ]; do
     if [ "$next_count" -eq 0 ]; then
         break
     fi
-    parents=("${next_parents[@]}")
+    parents=()
+    for ((index=0; index<next_count; index++)); do
+        read -r status < "${next_status_files[index]}"
+        if [[ "$status" == updated || "$status" == skipped ]]; then
+            parents+=("${next_parents[index]}")
+        fi
+    done
 done
 
 # ──────────────────────────────────────────────
-# Step 4 — Summary
+# Step 3 — Summary
 # ──────────────────────────────────────────────
 updated=0
 skipped=0

@@ -151,11 +151,6 @@ serial_scripts=""
 while IFS='|' read -r name script || [ -n "${name:-}" ]; do
   [ -n "${name:-}" ] || continue
 
-  if [ "$PARALLEL_JOBS" -eq 1 ]; then
-    run_module "$name" "$script"
-    continue
-  fi
-
   case " $serial_modules " in
     *" $name "*)
       serial_scripts="${serial_scripts}${name}|${script}"$'\n'
