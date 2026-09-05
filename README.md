@@ -180,7 +180,7 @@ Setup runs `tmux` and `ly` in a separate foreground phase after all background m
 DOTFILES_SERIAL_MODULES="tmux ly my-module" bash setup.sh
 ```
 
-An empty `DOTFILES_SERIAL_MODULES` allows every module to run in the background; use it only when none require terminal input or exclusive access. Background output streams live and may interleave. Setup waits for all workers and only runs `after_setup.sh` if every module succeeds.
+An empty `DOTFILES_SERIAL_MODULES` allows every module to run in the background; use it only when none require terminal input or exclusive access. Background modules receive `/dev/null` as stdin so non-interactive installers, including `skills --yes`, cannot read or change the foreground terminal through stdin. Their output streams live and may interleave. Setup waits for all workers and only runs `after_setup.sh` if every module succeeds.
 
 Update pulls the main repository with `--no-recurse-submodules`, then each submodule job switches to `main` and pulls with `--no-recurse-submodules`. Missing submodules are initialized inside their own jobs, not in a sequential fetch pass. Parent updates finish before their nested submodules are discovered and updated. The summary reports updated, skipped, and failed counts; any failure produces a nonzero exit status. Interrupting either script terminates active background workers.
 

@@ -255,5 +255,94 @@ class UpdateConcurrencyTests(unittest.TestCase):
         self.assertEqual((failed_directory / "version").read_text(encoding="utf-8"), "one\n")
 
 
+@unittest.skipUnless(os.name == "posix", "requires a controlling terminal")
+class SetupTerminalTests(unittest.TestCase):
+    def test_background_spinner_completes_and_foreground_prompt_can_read(self):
+        import errno
+        import pty
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for directory in ("setup", "agents", "tmux", "home"):
+                (root / directory).mkdir()
+            for source in ("setup.sh", "setup/lib.sh", "setup/parallel.sh"):
+                shutil.copy2(REPOSITORY / source, root / source)
+            (root / ".modules").write_text("agents\ntmux\n", encoding="utf-8")
+            (root / "agents/setup.sh").write_text(
+                'exec "$TEST_PYTHON" "$DOTFILES_DIR/spinner.py"\n', encoding="utf-8",
+            )
+            (root / "spinner.py").write_text(
+                "import os, sys, termios, tty\n"
+                "from pathlib import Path\n"
+                "print(f'WORKER_GROUP:{os.getpgrp()}', flush=True)\n"
+                # Skills' spinner does this even when all prompts use --yes.
+                "if sys.stdin.isatty():\n"
+                "    previous = termios.tcgetattr(0)\n"
+                "    tty.setraw(0)\n"
+                "    termios.tcsetattr(0, termios.TCSANOW, previous)\n"
+                "Path(os.environ['DOTFILES_DIR'], 'spinner-completed').touch()\n",
+                encoding="utf-8",
+            )
+            (root / "tmux/setup.sh").write_text(
+                "set -euo pipefail\n"
+                'printf "FOREGROUND_PROMPT\\n"\n'
+                "IFS= read -r answer\n"
+                '[ "$answer" = yes ]\n'
+                'touch "$DOTFILES_DIR/prompt-completed"\n', encoding="utf-8",
+            )
+            environment = os.environ | {
+                "HOME": str(root / "home"),
+                "TEST_PYTHON": sys.executable,
+                "DOTFILES_SERIAL_MODULES": "tmux ly",
+            }
+            pid, terminal = pty.fork()
+            if pid == 0:
+                os.chdir(root)
+                os.execve("./setup.sh", ["./setup.sh"], environment)
+
+            transcript = b""
+            status = None
+            answered = False
+            deadline = time.monotonic() + 10
+            try:
+                while time.monotonic() < deadline:
+                    if select.select([terminal], [], [], 0.1)[0]:
+                        try:
+                            chunk = os.read(terminal, 65536)
+                        except OSError as error:
+                            if error.errno != errno.EIO:
+                                raise
+                            chunk = b""
+                        transcript += chunk
+                        if b"FOREGROUND_PROMPT" in transcript and not answered:
+                            os.write(terminal, b"yes\n")
+                            answered = True
+                    completed, child_status = os.waitpid(pid, os.WNOHANG)
+                    if completed:
+                        status = child_status
+                        break
+                if status is None:
+                    completed, child_status = os.waitpid(pid, os.WNOHANG)
+                    if completed:
+                        status = child_status
+                self.assertEqual(status, 0, transcript.decode(errors="replace"))
+                self.assertTrue((root / "spinner-completed").exists())
+                self.assertTrue((root / "prompt-completed").exists())
+            finally:
+                if status is None:
+                    # A regression can suspend the worker in a terminal ioctl.
+                    groups = {pid}
+                    for line in transcript.decode(errors="replace").splitlines():
+                        if line.startswith("WORKER_GROUP:"):
+                            groups.add(int(line.split(":", 1)[1]))
+                    for group in groups:
+                        try:
+                            os.killpg(group, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                    os.waitpid(pid, 0)
+                os.close(terminal)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -156,7 +156,8 @@ while IFS='|' read -r name script || [ -n "${name:-}" ]; do
       serial_scripts="${serial_scripts}${name}|${script}"$'\n'
       ;;
     *)
-      parallel_run "$name" run_module "$name" "$script" <&3
+      # Background installers must not read or change the foreground terminal.
+      parallel_run "$name" run_module "$name" "$script" </dev/null 3</dev/null
       ;;
   esac
 done <<< "$MODULE_SCRIPTS"
