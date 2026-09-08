@@ -205,7 +205,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 **Custom modules** — some modules need more than a single symlink and have custom logic:
 
 - `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and symlinks individual scripts into it (including `ccode` and `clipboard-code` aliases).
-- `agents/setup.sh` — uses `npx skills@latest` to install personal skills globally for Pi, Codex, Claude Code, Zed, and universal agents.
+- `agents/setup.sh` — uses `npx skills@latest` to install only the small global skill set for Pi, Codex, Claude Code, Zed, and universal agents; project skills remain opt-in.
 
 ### Available Modules
 
@@ -249,13 +249,13 @@ kitty
 
 ## Personal Agent Skills
 
-Put each user-level skill in its own directory:
+Keep only deliberately global skills under `agents/skills/`. Add reusable project skills to the opt-in library:
 
 ```text
-agents/skills/<skill-name>/SKILL.md
+agents/library/<skill-name>/SKILL.md
 ```
 
-Enable the `agents` module and run `bash setup.sh`. The module passes the local skill collection to `npx skills@latest`, which refreshes the global installs for Pi, Codex, Claude Code, Zed, and universal agents. See [`agents/README.md`](agents/README.md) for installation and removal behavior.
+Enable the `agents` module and run `bash setup.sh` to install the global configuration (`AGENTS.md`, `eco-mode`, and `skill-authoring`). Ask an agent to select only the needed packages from `agents/library/` and copy them into a project's host-supported skills directory. Library additions are never installed globally by setup. See [`agents/README.md`](agents/README.md) for selection, migration, installation, and removal behavior.
 
 -----
 
