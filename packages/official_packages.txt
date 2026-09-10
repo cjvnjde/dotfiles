@@ -36,6 +36,8 @@ hyprland
 hyprpaper
 hyprpolkitagent
 inkscape
+iproute2
+iputils
 iwd
 jq
 krita
@@ -60,6 +62,7 @@ pipewire-audio
 pipewire-pulse
 playerctl
 plymouth
+python
 qemu-desktop
 qmk
 qpwgraph
