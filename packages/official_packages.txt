@@ -11,13 +11,11 @@ bluez
 bluez-utils
 btrfs-progs
 cryptsetup
-dmidecode
 dnsmasq
 docker
 docker-buildx
 docker-compose
 dosfstools
-erofs-utils
 eza
 fd
 flatpak
@@ -44,7 +42,6 @@ lazygit
 lib32-mesa
 lib32-vulkan-radeon
 libqalculate
-libva-utils
 libvirt
 linux
 linux-firmware
@@ -76,7 +73,6 @@ steam
 sudo
 syncthing
 tealdeer
-tree
 tree-sitter-cli
 udisks2
 unzip
