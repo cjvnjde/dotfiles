@@ -16,6 +16,7 @@ docker
 docker-buildx
 docker-compose
 dosfstools
+easyeffects
 eza
 fd
 flatpak
@@ -77,6 +78,7 @@ tree-sitter-cli
 udisks2
 unzip
 virt-manager
+virt-viewer
 vulkan-radeon
 wireless-regdb
 wireplumber
