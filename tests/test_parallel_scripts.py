@@ -59,7 +59,7 @@ class UpdateConcurrencyTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.directory = Path(self.temporary.name)
+        self.directory = Path(self.temporary.name).resolve()
         home = self.directory / "home"
         home.mkdir()
         (home / ".gitconfig").write_text(

@@ -13,7 +13,7 @@ class LinkerTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="dotfiles-test-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.root = Path(self.temporary.name).resolve()
         self.checkout = self.root / "checkout with spaces"
         self.home = self.root / "home"
         self.checkout.mkdir()
@@ -117,6 +117,30 @@ class LinkerTests(unittest.TestCase):
         self.run_bash('bash setup.sh --unknown', expected=2)
         self.run_bash('bash setup.sh missing-module', expected=2)
 
+    def test_setup_modes_work_with_system_and_path_bash(self):
+        source = self.add_module("editor")
+        self.add_module("disabled")
+        (self.checkout / ".modules").write_text("editor\n")
+        original_path = self.environment["PATH"]
+        shells = {Path(shutil.which("bash")).resolve(), Path("/bin/bash").resolve()}
+        for shell in sorted(shells):
+            with self.subTest(shell=str(shell)):
+                self.environment["PATH"] = str(shell.parent) + os.pathsep + original_path
+                output = self.run_bash('bash setup.sh --dry-run')
+                self.assertIn("Would apply editor (enable", output)
+                self.assertIn("Would apply disabled (disable", output)
+                output = self.run_bash('bash setup.sh --dry-run editor')
+                self.assertNotIn("Would apply disabled", output)
+                self.run_bash('bash setup.sh')
+                destination = self.home / ".config/editor"
+                self.assertEqual(destination.resolve(), source)
+                output = self.run_bash('bash setup.sh --dry-run --restore')
+                self.assertIn("Would restore editor", output)
+                self.assertNotIn("Would restore disabled", output)
+                self.run_bash('bash setup.sh --restore')
+                self.assertFalse(destination.is_symlink())
+                self.assertFalse(destination.exists())
+
     def test_restore_without_names_only_visits_enabled_modules_and_skips_hooks(self):
         self.add_module("editor")
         disabled = self.add_module("disabled")
@@ -135,18 +159,68 @@ class LinkerTests(unittest.TestCase):
         shutil.copy2(REPOSITORY / "home/setup/git.sh", self.checkout / "home/setup/git.sh")
         shutil.copy2(REPOSITORY / "home/git/config", self.checkout / "home/git/config")
         (self.checkout / "home/git/config.local").write_text('[user]\n name = Private Machine\n')
-        destination = self.home / ".config/git"
-        destination.mkdir(parents=True)
-        (destination / "config").write_text('[user]\n name = Original\n')
-        # Exercise migration of the old managed ~/.gitconfig link too.
+        (self.checkout / ".modules").write_text("git\n")
+        for setting in (None, "", "custom config with spaces"):
+            with self.subTest(xdg_config_home=setting):
+                home = self.home / (setting or f"default-{setting}")
+                self.environment["HOME"] = str(home)
+                if setting is None:
+                    self.environment.pop("XDG_CONFIG_HOME", None)
+                else:
+                    self.environment["XDG_CONFIG_HOME"] = str(home / setting) if setting else ""
+                config_root = Path(self.environment.get("XDG_CONFIG_HOME") or home / ".config")
+                destination = config_root / "git"
+                destination.mkdir(parents=True)
+                (destination / "config").write_text('[user]\n name = Original\n')
+                # Exercise migration of the old managed ~/.gitconfig link too.
+                (home / ".gitconfig").symlink_to(self.checkout / "home/.gitconfig")
+                self.run_bash('bash setup.sh')
+                self.assertFalse((home / ".gitconfig").is_symlink())
+                self.assertEqual(destination.resolve(), self.checkout / "home/git")
+                output = self.run_bash('git config --global --includes --get user.name')
+                self.assertEqual(output.strip(), "Private Machine")
+                self.run_bash('bash setup.sh --restore')
+                self.assertFalse(destination.is_symlink())
+                self.assertEqual((destination / "config").read_text(), '[user]\n name = Original\n')
+                output = self.run_bash('git config --global --includes --get user.name')
+                self.assertEqual(output.strip(), "Original")
+
+    def test_global_setup_loads_local_config_and_conditional_work_identity(self):
+        (self.checkout / "home/setup").mkdir(parents=True)
+        (self.checkout / "home/git").mkdir()
+        for name in ("home/setup/git.sh", "home/git/config"):
+            shutil.copy2(REPOSITORY / name, self.checkout / name)
+        (self.checkout / ".modules").write_text("git\n")
+        (self.checkout / "home/git/config.local").write_text(
+            '[user]\n signingkey = LOCAL_TEST_KEY\n'
+            '[commit]\n gpgsign = true\n'
+            '[core]\n editor = local-editor\n'
+            '[includeIf "gitdir:~/projects/work/"]\n path = work.local\n'
+        )
+        (self.checkout / "home/git/work.local").write_text(
+            '[user]\n name = Work User\n email = work@example.invalid\n'
+            ' signingkey = WORK_TEST_KEY\n'
+        )
+        # Simulate an existing installation after the old tracked file was removed.
         (self.home / ".gitconfig").symlink_to(self.checkout / "home/.gitconfig")
-        self.run_bash('bash home/setup/git.sh enable')
-        self.assertFalse((self.home / ".gitconfig").is_symlink())
-        output = self.run_bash('git config --global --includes --get user.name')
-        self.assertEqual(output.strip(), "Private Machine")
-        self.run_bash('DOTFILES_RESTORE_BACKUPS=1 bash home/setup/git.sh disable')
-        self.assertFalse(destination.is_symlink())
-        self.assertEqual((destination / "config").read_text(), '[user]\n name = Original\n')
+        self.run_bash('bash setup.sh')
+        self.run_bash('git init "$HOME/projects/work/example"')
+        output = self.run_bash('git config --global --includes --get user.signingkey')
+        self.assertEqual(output.strip(), "LOCAL_TEST_KEY")
+        output = self.run_bash('git config --global --includes --get commit.gpgsign')
+        self.assertEqual(output.strip(), "true")
+        for key, expected in (("user.name", "Work User"),
+                              ("user.email", "work@example.invalid"),
+                              ("user.signingkey", "WORK_TEST_KEY")):
+            output = self.run_bash('git -C "$HOME/projects/work/example" config --get "$1"', key)
+            self.assertEqual(output.strip(), expected)
+        output = self.run_bash('git -C "$HOME/projects/work/example" config --get user.email')
+        self.assertEqual(output.strip(), "work@example.invalid")
+        output = self.run_bash('git config --global --includes --get core.editor')
+        self.assertEqual(output.strip(), "local-editor")
+        self.run_bash('bash setup.sh')
+        output = self.run_bash('git -C "$HOME/projects/work/example" config --get user.signingkey')
+        self.assertEqual(output.strip(), "WORK_TEST_KEY")
 
     def test_scripts_restore_uses_the_same_names_as_install(self):
         (self.checkout / "scripts/clipboard-code").mkdir(parents=True)

@@ -147,7 +147,8 @@ echo
 
 MODULE_SCRIPTS="$(discover_modules)"
 
-for name in "${requested_modules[@]}"; do
+# Bash 3.2 treats an empty array as unset under nounset.
+for name in ${requested_modules[@]+"${requested_modules[@]}"}; do
   if ! module_exists "$name"; then
     error "Unknown module: $name"
     exit 2

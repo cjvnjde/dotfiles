@@ -224,7 +224,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `kitty`      | `~/.config/kitty`                  |                                |
 | `ghostty`    | `~/.config/ghostty`                |                                |
 | `zshrc`      | `~/.zshrc`                         | Loads `home/.zshrc.local`       |
-| `git`        | `~/.config/git`                    | Includes `home/git/config.local` |
+| `git`        | `$XDG_CONFIG_HOME/git` (default `~/.config/git`) | Includes `home/git/config.local` |
 | `ideavim`    | `~/.ideavimrc`                     |                                |
 | `wezterm`    | `~/.wezterm.lua`                   |                                |
 | `opencode`   | `~/.config/opencode/opencode.json` |                                |
@@ -256,7 +256,8 @@ Neovim loads its local file before the shared configuration, calls `before_init`
 then calls `after_init` once shared options, plugins, LSP, and mappings are ready.
 Top-level code and both hooks are optional. Zsh follows the same early/late order;
 syntax highlighting loads after its late hook. Existing `~/.zshrc_local` files
-remain a fallback until `home/.zshrc.local` is created.
+remain a fallback until `home/.zshrc.local` is created; they load after shared
+initialization to preserve their alias and keybinding overrides.
 
 Ghostty loads `config.local` through its native optional include. On Omarchy,
 `font-family = monospace` in that file follows the system font, and the optional
@@ -264,10 +265,14 @@ Ghostty loads `config.local` through its native optional include. On Omarchy,
 The shared font line is intentionally unquoted so the installed Omarchy font
 setter does not rewrite the tracked preference.
 
-Git links a directory so its relative `config.local` include works regardless of
-where the checkout lives. Setup removes only the legacy `~/.gitconfig` symlink
+Git links a directory at `${XDG_CONFIG_HOME:-$HOME/.config}/git` so its relative
+`config.local` include works regardless of where the checkout lives. For a
+separate work identity, add a conditional include in `home/git/config.local`
+pointing to `work.local` beside it. All `home/git/*.local` files are gitignored.
+Enable `git` in `.modules` and run the global `bash setup.sh` to link it;
+setup does not migrate private files. Setup removes only the legacy `~/.gitconfig` symlink
 owned by this checkout; an unrelated file is left alone and can override XDG Git
-settings. Move any old `home/.gitconfig_local` settings into `home/git/config.local`.
+settings.
 Edit private Git values with `git config --file /path/to/home/git/config.local`.
 When inspecting includes with `git config --global`, add `--includes`.
 
