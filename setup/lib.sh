@@ -129,11 +129,49 @@ unlink_managed() {
   UNLINK_WAS_CHANGED=1
 }
 
+latest_backup() {
+  local target="$1" candidate suffix
+  local latest="" highest=-1 number
+
+  for candidate in "$target.bak" "$target.bak"[0-9]*; do
+    [ -e "$candidate" ] || [ -L "$candidate" ] || continue
+    suffix="${candidate#"$target.bak"}"
+    if [ -z "$suffix" ]; then
+      number=0
+    elif [[ "$suffix" =~ ^[0-9]+$ ]]; then
+      number=$((10#$suffix))
+    else
+      continue
+    fi
+    if [ "$number" -gt "$highest" ]; then
+      latest="$candidate"
+      highest="$number"
+    fi
+  done
+
+  [ -n "$latest" ] || return 0
+  printf '%s\n' "$latest"
+}
+
+restore_backup() {
+  local target="$1" backup
+  backup="$(latest_backup "$target")"
+  [ -n "$backup" ] || return 0
+
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    error "Refusing to overwrite an unmanaged path: $target"
+    return 1
+  fi
+  mv -- "$backup" "$target"
+  success "Restored → $target (from $backup)"
+}
+
 link_path() {
   local src="$1"
   local dest="$2"
 
-  if link_exact "$src" "$dest" && [ "$LINK_WAS_CHANGED" -eq 1 ]; then
+  link_exact "$src" "$dest" || return $?
+  if [ "$LINK_WAS_CHANGED" -eq 1 ]; then
     success "Linked → $dest"
   fi
 }
@@ -144,6 +182,13 @@ unlink_path() {
 
   if unlink_managed "$src" "$dest" && [ "$UNLINK_WAS_CHANGED" -eq 1 ]; then
     success "Unlinked → $dest"
+  fi
+
+  if [ "${DOTFILES_RESTORE_BACKUPS:-0}" = 1 ]; then
+    # Never overwrite another config or a link owned by a different checkout.
+    if [ ! -e "$dest" ] && [ ! -L "$dest" ]; then
+      restore_backup "$dest"
+    fi
   fi
 }
 

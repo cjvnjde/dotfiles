@@ -61,7 +61,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 
 - **Terminal Tools**:
 
-  - [atuin](https://github.com/atuinsh/atuin): Enhanced shell history (installed via its own installer).
+  - [atuin](https://github.com/atuinsh/atuin): Enhanced shell history.
   - [bat](https://github.com/sharkdp/bat): A `cat` clone with syntax highlighting.
   - [eza](https://github.com/eza-community/eza): A modern replacement for `ls`.
   - [fzf](https://github.com/junegunn/fzf): A command-line fuzzy finder.
@@ -70,7 +70,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
   - [ripgrep](https://github.com/BurntSushi/ripgrep): A fast line-oriented search tool.
   - [zoxide](https://github.com/ajeetdsouza/zoxide): A smarter `cd` command.
   - [jq](https://jqlang.org/): A command-line JSON parser.
-  - [mise](https://mise.jdx.dev/): Dev tools/runtimes manager (installed via its own installer).
+  - [mise](https://mise.jdx.dev/): Dev tools/runtimes manager.
   - [tldr](https://github.com/tldr-pages/tldr): Simplified man pages.
   - [tree-sitter-cli](https://github.com/tree-sitter/tree-sitter/blob/master/crates/cli/README.md): Required for Neovim.
 
@@ -98,12 +98,7 @@ Below are the packages relevant to these dotfiles.
 sudo pacman -S zsh git starship zsh-syntax-highlighting zsh-autosuggestions
 
 # Terminal tools
-sudo pacman -S bat eza fzf git-delta ghostty jq neovim ripgrep tldr zoxide
-cargo install --locked tree-sitter-cli
-
-# Installed via their own installers (not pacman)
-curl https://mise.run | sh
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+sudo pacman -S atuin bat eza fzf git-delta ghostty jq neovim ripgrep tldr tree-sitter-cli zellij zoxide
 
 # Wayland common
 sudo pacman -S waybar rofi rofi-calc dunst libnotify grim slurp satty wl-clipboard wf-recorder
@@ -120,6 +115,24 @@ sudo pacman -S niri xwayland-satellite swaybg
 # Audio & Bluetooth
 sudo pacman -S pipewire wireplumber bluez bluez-utils bluetui
 ```
+
+-----
+
+## Omarchy
+
+Install missing tools through Omarchy's package helper, after reviewing the
+transaction. Use mise only for tools unavailable in the configured repositories;
+do not use AUR, Cargo, npm, or standalone installers for this setup.
+
+```bash
+omarchy pkg add zsh zsh-autosuggestions zsh-syntax-highlighting atuin zellij ghostty git-delta ttf-firacode-nerd
+```
+
+Copy each module's local example to its gitignored local filename and customize
+it before linking. Keep Omarchy theme includes, prompt selection, shell activation,
+and other machine settings in those local files. Setup only links configuration;
+it does not install these packages, change the login shell, or choose a default
+terminal. Continue to use `omarchy update` for system updates.
 
 -----
 
@@ -193,7 +206,7 @@ nvim/setup.sh        → symlinks nvim/     to ~/.config/nvim
 
 ```
 home/setup/zshrc.sh    → symlinks home/.zshrc      to ~/.zshrc
-home/setup/git.sh      → symlinks home/.gitconfig   to ~/.gitconfig
+home/setup/git.sh      → symlinks home/git/        to ~/.config/git
 home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 ```
 
@@ -210,8 +223,8 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `alacritty`  | `~/.config/alacritty`              |                                |
 | `kitty`      | `~/.config/kitty`                  |                                |
 | `ghostty`    | `~/.config/ghostty`                |                                |
-| `zshrc`      | `~/.zshrc`                         | Sources `~/.zshrc_local` if it exists |
-| `git`        | `~/.gitconfig`                     |                                |
+| `zshrc`      | `~/.zshrc`                         | Loads `home/.zshrc.local`       |
+| `git`        | `~/.config/git`                    | Includes `home/git/config.local` |
 | `ideavim`    | `~/.ideavimrc`                     |                                |
 | `wezterm`    | `~/.wezterm.lua`                   |                                |
 | `opencode`   | `~/.config/opencode/opencode.json` |                                |
@@ -226,12 +239,37 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 
 ### Local Overrides
 
-Several config files support machine-specific overrides that are git-ignored:
+Machine-specific overrides live inside their owning module and are gitignored
+by that submodule. Copy a tracked example, remove `.example` from its name, and
+keep the resulting local file private. Local files accept general configuration,
+including options, paths, keybindings, plugins, and themes.
 
 | File                  | Purpose                                           |
 | --------------------- | ------------------------------------------------- |
 | `.modules.local`      | Override enabled modules (supports `!module` to disable) |
-| `~/.zshrc_local`      | Private aliases, env vars, machine-specific shell config |
+| `nvim/init.local.lua` | Top-level Lua and optional `before_init` / `after_init` functions |
+| `ghostty/config.local` | Any Ghostty settings; included after shared settings |
+| `home/.zshrc.local`   | Early Zsh setup and optional `zshrc_local_after_init` function |
+| `home/git/config.local` | Any Git sections; included last by `home/git/config` |
+
+Neovim loads its local file before the shared configuration, calls `before_init`,
+then calls `after_init` once shared options, plugins, LSP, and mappings are ready.
+Top-level code and both hooks are optional. Zsh follows the same early/late order;
+syntax highlighting loads after its late hook. Existing `~/.zshrc_local` files
+remain a fallback until `home/.zshrc.local` is created.
+
+Ghostty loads `config.local` through its native optional include. On Omarchy,
+`font-family = monospace` in that file follows the system font, and the optional
+`~/.local/state/omarchy/current/theme/ghostty.conf` include supplies theme colors.
+The shared font line is intentionally unquoted so the installed Omarchy font
+setter does not rewrite the tracked preference.
+
+Git links a directory so its relative `config.local` include works regardless of
+where the checkout lives. Setup removes only the legacy `~/.gitconfig` symlink
+owned by this checkout; an unrelated file is left alone and can override XDG Git
+settings. Move any old `home/.gitconfig_local` settings into `home/git/config.local`.
+Edit private Git values with `git config --file /path/to/home/git/config.local`.
+When inspecting includes with `git config --global`, add `--includes`.
 
 **Example `.modules.local`** — enable everything from `.modules` but drop Alacritty and add Kitty:
 
@@ -292,5 +330,30 @@ The root `setup.sh` discovers modules automatically — no registration step nee
     `update.sh` switches each non-ignored submodule to `main` and pulls normally; it does not hard-reset local work. Missing `main` branches, checkout conflicts, and pull failures are reported as errors.
 
 - **Conflicts:** Most modules back up an existing destination to `<path>.bak` before linking. The `agents` module delegates same-name skill handling to the `skills` CLI; unrelated skill names remain untouched.
+
+- **Preview without changing files:**
+
+    ```bash
+    bash setup.sh --dry-run
+    bash setup.sh --dry-run nvim ghostty git zshrc
+    ```
+
+    This shows module actions without executing module scripts or post-setup hooks.
+    Supplying module names limits setup to those modules; each follows `.modules`.
+
+- **Restore the previous configuration:**
+
+    ```bash
+    bash setup.sh --dry-run --restore nvim ghostty git
+    bash setup.sh --restore nvim ghostty git
+    ```
+
+    Restore removes only links managed by this checkout and moves the newest
+    numbered backup (`.bak`, `.bak1`, ... `.bak10`) back into place. Earlier backups
+    remain available. Existing unmanaged paths are left untouched. Without names,
+    restore visits only currently enabled modules. It skips post-setup hooks and
+    does not reinstall anything. Ordinary disable still only unlinks; restoration
+    must be requested explicitly. Backups are adjacent to their original paths,
+    so for `~/.config/git` the backup is `~/.config/git.bak`.
 
 - **Submodules:** Most modules are git submodules. Changes to module setup scripts need to be committed inside the submodule first, then the parent repo pointer updated.

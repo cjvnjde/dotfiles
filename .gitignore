@@ -1,5 +1,6 @@
 .DS_Store
 .pi*
+__pycache__/
 
 .modules*
 !.modules.example

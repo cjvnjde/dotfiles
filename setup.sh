@@ -32,6 +32,35 @@ source "$ROOT_DIR/setup/parallel.sh"
 trap 'action_failed "$LINENO" "$BASH_COMMAND"' ERR
 parallel_init
 
+mode=apply
+dry_run=0
+requested_modules=()
+for argument in "$@"; do
+  case "$argument" in
+    --restore) mode=restore ;;
+    --dry-run) dry_run=1 ;;
+    -h|--help)
+      cat <<'USAGE'
+Usage: bash setup.sh [--dry-run] [--restore] [module ...]
+
+Apply the configured enable/disable actions, optionally limited to named modules.
+--dry-run  Show module actions without running scripts or changing files.
+--restore  Unlink managed configs and restore their newest .bak/.bakN backups.
+           With no module names, restore only currently enabled modules.
+USAGE
+      exit 0
+      ;;
+    -*) error "Unknown option: $argument"; exit 2 ;;
+    *) requested_modules+=("$argument") ;;
+  esac
+done
+
+if [ "$mode" = restore ]; then
+  export DOTFILES_RESTORE_BACKUPS=1
+else
+  unset DOTFILES_RESTORE_BACKUPS
+fi
+
 export DOTFILES_DIR="$ROOT_DIR"
 exec 3<&0
 
@@ -118,6 +147,24 @@ echo
 
 MODULE_SCRIPTS="$(discover_modules)"
 
+for name in "${requested_modules[@]}"; do
+  if ! module_exists "$name"; then
+    error "Unknown module: $name"
+    exit 2
+  fi
+done
+
+should_run_module() {
+  local name="$1" requested
+  if [ "${#requested_modules[@]}" -gt 0 ]; then
+    for requested in "${requested_modules[@]}"; do
+      [ "$requested" != "$name" ] || return 0
+    done
+    return 1
+  fi
+  [ "$mode" != restore ] || in_enabled "$name"
+}
+
 while IFS= read -r name || [ -n "${name:-}" ]; do
   [ -n "${name:-}" ] || continue
   if ! module_exists "$name"; then
@@ -131,8 +178,13 @@ run_module() {
   local action=disable
   local status
 
-  if in_enabled "$name"; then
+  if [ "$mode" = apply ] && in_enabled "$name"; then
     action=enable
+  fi
+
+  if [ "$dry_run" -eq 1 ]; then
+    info "Would $mode $name ($action via $script)"
+    return 0
   fi
 
   info "$action $name"
@@ -150,6 +202,12 @@ serial_scripts=""
 
 while IFS='|' read -r name script || [ -n "${name:-}" ]; do
   [ -n "${name:-}" ] || continue
+  should_run_module "$name" || continue
+
+  if [ "$dry_run" -eq 1 ]; then
+    run_module "$name" "$script"
+    continue
+  fi
 
   case " $serial_modules " in
     *" $name "*)
@@ -170,11 +228,13 @@ while IFS='|' read -r name script || [ -n "${name:-}" ]; do
   run_module "$name" "$script"
 done <<< "$serial_scripts"
 
-touch "$HOME/.hushlogin" 2>/dev/null && info "Ensured ~/.hushlogin"
+if [ "$mode" = apply ] && [ "$dry_run" -eq 0 ]; then
+  touch "$HOME/.hushlogin" 2>/dev/null && info "Ensured ~/.hushlogin"
 
-if [ -f "$ROOT_DIR/after_setup.sh" ]; then
-  info "Running after_setup.sh…"
-  bash "$ROOT_DIR/after_setup.sh"
+  if [ -f "$ROOT_DIR/after_setup.sh" ]; then
+    info "Running after_setup.sh…"
+    bash "$ROOT_DIR/after_setup.sh"
+  fi
 fi
 
 exec 3<&-
