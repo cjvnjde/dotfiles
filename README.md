@@ -35,7 +35,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 | **Window Manager** | `Sway`, `Hyprland`, `Niri`                         |
 | **Status Bar**     | `Waybar`                                           |
 | **Terminal**       | `Alacritty`, `Kitty`, `Ghostty`                    |
-| **Shell**          | `Zsh` (with Oh My Zsh, Atuin, Zoxide)              |
+| **Shell**          | `Zsh` (with Starship, Atuin, Zoxide)              |
 | **Editor**         | `Neovim`                                           |
 | **Multiplexer**    | `Zellij`, `Tmux`                                   |
 | **Git**            | `delta`, `git-cliff`, `github-cli`                 |
@@ -54,10 +54,9 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 - **Core**:
 
   - `git`: For cloning and managing the repository.
-  - `zsh` & [oh-my-zsh](https://ohmyz.sh/): The primary shell environment.
+  - `zsh` & [Starship](https://starship.rs/): The shell and prompt.
   - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md)
   - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)
-  - [zsh-defer](https://github.com/romkatv/zsh-defer): Deferred execution for faster shell startup.
   - [Nerd Fonts](https://www.nerdfonts.com/): Required for icons (this config uses **FiraCode Nerd Font**).
 
 - **Terminal Tools**:
@@ -96,11 +95,7 @@ Below are the packages relevant to these dotfiles.
 
 ```bash
 # Shell & core
-sudo pacman -S zsh git
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/romkatv/zsh-defer ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-defer
+sudo pacman -S zsh git starship zsh-syntax-highlighting zsh-autosuggestions
 
 # Terminal tools
 sudo pacman -S bat eza fzf git-delta ghostty jq neovim ripgrep tldr zoxide
