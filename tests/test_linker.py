@@ -229,6 +229,7 @@ class LinkerTests(unittest.TestCase):
             "backup_gpg": "backup_gpg.sh", "restore_gpg": "restore_gpg.sh",
             "save_installed_packages": "save_installed_packages.sh",
             "update_arch": "update_arch.sh", "tmux_sessionizer": "tmux_sessionizer.sh",
+            "ports": "ports.sh",
             "clipboard-code": "clipboard-code/clipboard-code.sh",
             "ccode": "clipboard-code/clipboard-code.sh",
         }
