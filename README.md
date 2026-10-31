@@ -237,6 +237,12 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `hyprland`   | `~/.config/hypr`                   |                                |
 | `ly`         | `/etc/ly/config.ini`                | Requires root access           |
 
+Neovim's `nvim/nvim-pack-lock.json` must stay in sync with the plugins declared in
+`nvim/lua/config/pack.lua` and any local overrides. Remove obsolete lockfile entries
+when dropping plugins: `vim.pack` restores missing plugins from the entire
+lockfile, even when they are no longer declared. The installation dialog's
+**Always** choice applies only to the current Neovim session.
+
 ### Local Overrides
 
 Machine-specific overrides live inside their owning module and are gitignored
