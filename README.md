@@ -138,6 +138,152 @@ terminal. Continue to use `omarchy update` for system updates.
 
 ## Installation
 
+### Install with a coding agent
+
+Copy this prompt into your coding agent to install the dotfiles. It will ask you
+which modules, tools, and personal settings to use before applying changes.
+
+```text
+Help me install and configure git@github.com:cjvnjde/dotfiles.git on this machine.
+Carry out the installation, not just a plan, but pause for the choices and
+approvals below. Read the repository instructions and actual scripts before
+acting. Use current official installation documentation and latest stable
+releases; do not guess package names or agent installers.
+
+1. Inspect the system and clone safely.
+   - Detect OS, distribution, architecture, shell, installed package managers,
+     Git, and whether this is an Omarchy installation. Ask about my preferred
+     checkout path, suggesting ~/dotfiles.
+   - If Git or macOS Command Line Tools are missing, explain and ask permission
+     to install the prerequisites through the supported platform mechanism.
+   - Verify GitHub SSH access (for example, ssh -T git@github.com; GitHub's
+     successful authentication message normally accompanies exit status 1).
+     Respect host-key verification; never disable it. If SSH is unavailable,
+     stop and ask me to fix access, offering guidance for keys, ssh-agent, and
+     GitHub authorization. Do not silently switch to HTTPS or create/upload keys.
+   - Clone with git clone --recurse-submodules --branch main
+     git@github.com:cjvnjde/dotfiles.git <chosen-path>.
+     Reuse an existing checkout only after checking its origin, branch, local
+     changes, and submodules. Never overwrite it or discard local work.
+
+2. Update from the repository root.
+   - Read AGENTS.md and inspect update.sh and setup.sh. Confirm the root is on
+     main; ask before switching an existing checkout with unrelated work.
+   - Run ./update.sh from the root. It pulls the root's current branch, then
+     initializes managed submodules, switches them to main, and pulls in
+     parent-first order; test/tests dependencies are excluded from updates.
+     It does not switch the root branch itself.
+   - Stop on failures and help resolve them without reset, clean, or force.
+     Do not substitute ad hoc pulls or submodule update --remote.
+
+3. Ask which modules I want.
+   - Read the current .modules.example as the module menu, then inspect the
+     corresponding setup scripts and configuration for dependencies and effects.
+     Explain the modules briefly and suggest a platform-appropriate selection.
+     Do not enable everything by default: Linux desktop/login modules such as
+     hyprland and ly are not macOS modules. Ask which terminal(s), editor,
+     multiplexers, shell integrations, and agent configuration I actually want.
+   - Create .modules with only my chosen module names, one per line. Preserve
+     existing selections unless I approve replacing them. Inspect .modules.local
+     too: it is applied afterward and !module disables an earlier selection.
+     Confirm the final effective selection, including any overrides.
+   - Installing agent executables and enabling the agents configuration module
+     are separate choices. Explain that the latter installs global agent
+     configuration/skills through its setup hook; it is not an agent installer.
+
+4. Propose and install packages before linking configuration.
+   - Show me the proposed packages and their purpose, then obtain approval.
+     Use the native package manager where possible and adapt package names to
+     the platform. Check what is already installed; do not install unrelated
+     desktop packages or the entire packages/ inventory.
+   - On macOS use Homebrew. If missing, explain what it changes and ask before
+     installing via the current official instructions at https://brew.sh.
+     Initialize brew shellenv appropriately for this machine, without assuming
+     an Intel or Apple Silicon path.
+   - Install mise and use its current supported backends to install and select
+     stable Bun, Node.js, Go, and Rust for my user. Explain any existing runtime
+     conflicts before changing defaults. Ensure these tools, including node,
+     npm/npx, and bun, are available to non-interactive setup subprocesses.
+     Do not run the whole setup with sudo.
+   - Use this as the baseline development-tool list, adapting to my selections:
+     atuin, bat, eza, fd, fzf, git-cliff, git-delta, git-lfs, jq, neovim,
+     ripgrep, starship, tlrc, tmux, zellij, zoxide, zsh-autosuggestions,
+     zsh-syntax-highlighting. Install Zsh if needed. Package names can differ
+     (for example delta, fd/fdfind, bat/batcat, and the tldr client).
+     Keep tools referenced by enabled configuration, omit module-specific tools
+     I decline, and explain dependencies. bat must be available as `bat` even
+     without the bat module: the root after_setup.sh always runs bat cache --build.
+   - Install the tree-sitter CLI (not just its library) when Neovim is selected,
+     plus compiler/build tools and other dependencies required by the actual
+     selected configuration. Verify the executable is `tree-sitter`.
+   - For Ghostty, install Ghostty and its configured FiraCode Nerd Font
+     (Homebrew casks ghostty and font-fira-code-nerd-font). If I choose another
+     terminal, install that terminal instead and inspect its font requirements;
+     do not install Ghostty solely because it appears in this prompt.
+   - Ask which coding agents to install, allowing multiple or none: Codex,
+     Claude Code, Pi, and omp. Clarify that omp means oh-my-pi before installing.
+     Verify each chosen project's identity, current official installer/package,
+     and runtime requirements. Do not infer npm package names. Keep login,
+     subscription selection, and credential entry interactive and private.
+   - For Linux, map the approved list to the distribution's packages and explain
+     anything unavailable before choosing an alternative. On Omarchy follow
+     this README's policy: use `omarchy pkg add`, use mise only for tools absent
+     from configured repositories, and do not use AUR, Cargo, npm, or standalone
+     installers. If that conflicts with a runtime or agent request, ask me how
+     to proceed rather than bypassing the policy. Do not enable services, change
+     the login shell, or change the default terminal without separate consent.
+
+5. Configure private local overrides with me.
+   - Inspect tracked local examples and how their owning modules load them.
+     Discuss these before setup, so I do not start with the author's identity
+     or unsuitable machine settings. Never copy the author's private local files.
+   - Offer these copies only for selected modules, never overwriting an existing
+     local file:
+       home/.zshrc.local.example -> home/.zshrc.local
+       home/git/config.local.example -> home/git/config.local
+       ghostty/config.local.example -> ghostty/config.local
+       nvim/init.local.example.lua -> nvim/init.local.lua
+     Note that Neovim's example is renamed, not just stripped of `.example`.
+   - For Git inspect shared defaults and ask for my name/email, whether to sign
+     commits and/or tags, SSH versus GPG signing, the public signing key or key
+     identifier, and any work identity/conditional includes. Explain any signing
+     helpers or verification configuration required. Configure approved values
+     in home/git/config.local (and optional work.local), overriding shared
+     signing defaults if needed. Do not enable unusable signing or make a test
+     commit without permission. Never request or print private keys or tokens.
+   - Check for an existing ~/.gitconfig and private Git includes: an unrelated
+     file is not migrated by setup and can override the XDG Git configuration.
+     Ask before migrating anything; preserve private settings and backups.
+   - Ask about shell PATH, mise activation, aliases, prompt/history integrations,
+     terminal font/theme, and Neovim overrides as relevant. Inspect existing
+     integration hooks to avoid activating tools twice. Keep machine-specific
+     settings in the supported local files, not tracked shared configuration.
+     Verify these local files are ignored by their owning repositories.
+
+6. Preview and apply setup.
+   - Run bash setup.sh --dry-run from the root and explain enabled/disabled
+     actions, existing destination conflicts, backup behavior, and module hooks
+     that install plugins/skills, access the network, prompt, or require sudo.
+     Omitted modules may have disable actions; review these too. A dry run does
+     not execute the hooks and cannot guarantee their success.
+   - After my approval, run bash setup.sh with the installed tools on PATH.
+     This links configuration and runs module/post-setup hooks; it does not
+     replace the system-package installation step. Preserve existing files,
+     inspect failures, and do not claim success if any module or hook fails.
+
+7. Verify and summarize.
+   - Check the selected tools' executables/versions, runtime selection, intended
+     symlink targets, and relevant shell/editor/terminal configuration. Check
+     effective Git identity and signing configuration with includes enabled,
+     without exposing secrets. Run non-destructive checks where possible.
+   - Report installed packages/agents, enabled modules, private override paths,
+     backups, any unresolved issues, and remaining manual steps such as opening
+     a fresh shell, agent authentication, or authorizing a signing key.
+     Do not commit or push installation changes unless I explicitly ask.
+```
+
+### Manual installation
+
 1. **Clone the repository** and its submodules:
 
     ```bash
