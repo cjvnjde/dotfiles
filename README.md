@@ -389,6 +389,11 @@ when dropping plugins: `vim.pack` restores missing plugins from the entire
 lockfile, even when they are no longer declared. The installation dialog's
 **Always** choice applies only to the current Neovim session.
 
+Shared Neovim key assignments, descriptions, plugin mapping options, and
+buffer-local mapping installation live in `nvim/lua/config/mappings.lua`.
+Multi-step LSP toggles are implemented in `nvim/lua/config/lsp_actions.lua`;
+that module defines no keys. Short action callbacks remain inline in the mappings file.
+
 ### Local Overrides
 
 Machine-specific overrides live inside their owning module and are gitignored
