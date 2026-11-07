@@ -78,7 +78,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 - **GUI (Linux/Wayland)** — install only what you need for your chosen WM:
 
   - **Sway**: `sway`, `swaylock`, `swaybg`, `swayidle`, `xdg-desktop-portal-wlr`
-  - **Hyprland**: `hyprland`, `quickshell`, `hypridle`, `hyprlock`, `mako`
+  - **Hyprland**: `hyprland`, `quickshell`, `hypridle`, `hyprlock`, `mako`, `hyprshot`, `hyprpicker` (frozen screenshots)
   - **Niri**: `niri`, `xwayland-satellite`, `swaybg`
   - **Common**: `waybar`, `rofi`, `rofi-calc`, `dunst`, `libnotify`
   - **Screenshots**: `grim`, `slurp`, `satty` (annotation editor), `wf-recorder` (screen recording)
@@ -108,7 +108,7 @@ sudo pacman -S waybar rofi rofi-calc dunst libnotify grim slurp satty wl-clipboa
 sudo pacman -S sway swaylock swaybg swayidle xdg-desktop-portal-wlr
 
 # Hyprland (install instead of / in addition to Sway)
-sudo pacman -S hyprland quickshell hypridle hyprlock mako
+sudo pacman -S hyprland quickshell hypridle hyprlock mako hyprshot hyprpicker
 
 # Niri (install instead of / in addition to Sway)
 sudo pacman -S niri xwayland-satellite swaybg
