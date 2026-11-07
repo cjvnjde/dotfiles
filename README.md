@@ -20,6 +20,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 - [dotfiles.alacritty](https://github.com/cjvnjde/dotfiles.alacritty)
 - [dotfiles.dunst](https://github.com/cjvnjde/dotfiles.dunst)
 - [dotfiles.hyprland](https://github.com/cjvnjde/dotfiles.hyprland)
+- [dotfiles.mako](https://github.com/cjvnjde/dotfiles.mako)
 - [dotfiles.kitty](https://github.com/cjvnjde/dotfiles.kitty)
 - [dotfiles.niri](https://github.com/cjvnjde/dotfiles.niri)
 - [dotfiles.nvim2](https://github.com/cjvnjde/dotfiles.nvim2)
@@ -40,7 +41,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 | **Multiplexer**    | `Zellij`, `Tmux`                                   |
 | **Git**            | `delta`, `git-cliff`, `github-cli`                 |
 | **Launcher**       | `Rofi` (+ `rofi-calc`)                             |
-| **Notifications**  | `Dunst`                                            |
+| **Notifications**  | `Dunst`, `Mako`                                    |
 | **Screenshots**    | `grim`, `slurp`, `satty`                           |
 | **File Manager**   | `lf`                                               |
 | **Utilities**      | `bat`, `eza`, `fzf`, `ripgrep`, `jq`, `tldr`, `mise` |
@@ -77,7 +78,7 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 - **GUI (Linux/Wayland)** — install only what you need for your chosen WM:
 
   - **Sway**: `sway`, `swaylock`, `swaybg`, `swayidle`, `xdg-desktop-portal-wlr`
-  - **Hyprland**: `hyprland`, `quickshell`, `hypridle`, `hyprlock`
+  - **Hyprland**: `hyprland`, `quickshell`, `hypridle`, `hyprlock`, `mako`
   - **Niri**: `niri`, `xwayland-satellite`, `swaybg`
   - **Common**: `waybar`, `rofi`, `rofi-calc`, `dunst`, `libnotify`
   - **Screenshots**: `grim`, `slurp`, `satty` (annotation editor), `wf-recorder` (screen recording)
@@ -107,7 +108,7 @@ sudo pacman -S waybar rofi rofi-calc dunst libnotify grim slurp satty wl-clipboa
 sudo pacman -S sway swaylock swaybg swayidle xdg-desktop-portal-wlr
 
 # Hyprland (install instead of / in addition to Sway)
-sudo pacman -S hyprland quickshell hypridle hyprlock
+sudo pacman -S hyprland quickshell hypridle hyprlock mako
 
 # Niri (install instead of / in addition to Sway)
 sudo pacman -S niri xwayland-satellite swaybg
@@ -360,6 +361,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 
 - `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and symlinks individual scripts into it (including `ccode` and `clipboard-code` aliases).
 - `agents/setup.sh` — uses `npx skills@latest` to install only the small global skill set for Pi, Codex, Claude Code, Zed, and universal agents; project skills remain opt-in.
+- `mako/setup.sh` — links only `$XDG_CONFIG_HOME/mako/config` (default `~/.config/mako/config`), preserving other files in the notification daemon's directory.
 
 ### Available Modules
 
@@ -381,6 +383,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `zellij`     | `~/.config/zellij`                 |                                |
 | `tmux`       | `~/.config/tmux`                   |                                |
 | `hyprland`   | `~/.config/hypr`                   |                                |
+| `mako`       | `$XDG_CONFIG_HOME/mako/config` (default `~/.config/mako/config`) | Wayland notifications; see [mako/README.md](mako/README.md) |
 | `ly`         | `/etc/ly/config.ini`                | Requires root access           |
 
 Neovim's `nvim/nvim-pack-lock.json` must stay in sync with the plugins declared in

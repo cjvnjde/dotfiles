@@ -56,3 +56,7 @@
 	path = sbx
 	url = git@github.com:cjvnjde/dotfiles.sbx.git
 	branch = main
+[submodule "mako"]
+	path = mako
+	url = git@github.com:cjvnjde/dotfiles.mako.git
+	branch = main
