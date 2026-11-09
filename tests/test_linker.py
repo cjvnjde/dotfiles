@@ -223,16 +223,17 @@ class LinkerTests(unittest.TestCase):
         self.assertEqual(output.strip(), "WORK_TEST_KEY")
 
     def test_scripts_restore_uses_the_same_names_as_install(self):
-        (self.checkout / "scripts/clipboard-code").mkdir(parents=True)
+        (self.checkout / "scripts").mkdir()
         shutil.copy2(REPOSITORY / "scripts/setup.sh", self.checkout / "scripts/setup.sh")
         files = {
-            "backup_gpg": "backup_gpg.sh", "restore_gpg": "restore_gpg.sh",
-            "save_installed_packages": "save_installed_packages.sh",
-            "update_arch": "update_arch.sh", "tmux_sessionizer": "tmux_sessionizer.sh",
-            "ports": "ports.sh",
-            "clipboard-code": "clipboard-code/clipboard-code.sh",
-            "ccode": "clipboard-code/clipboard-code.sh",
+            "aur-ai-review": "aur-ai-review.sh",
+            "backup-gpg": "backup-gpg.sh",
+            "backup-creds": "backup-creds.sh",
+            "future-tool": "future-tool.sh",
+            "save-installed-packages": "save-installed-packages.sh",
         }
+        (self.checkout / "scripts/setup-helper.sh").touch()
+        (self.checkout / "scripts/not-a-file.sh").mkdir()
         destination = self.home / ".local/scripts"
         destination.mkdir(parents=True)
         for name, source in files.items():
@@ -240,6 +241,8 @@ class LinkerTests(unittest.TestCase):
             (destination / name).write_text("original " + name)
         self.run_bash('bash scripts/setup.sh enable')
         self.assertTrue(all((destination / name).is_symlink() for name in files))
+        for name in ("setup", "setup-helper", "not-a-file"):
+            self.assertFalse((destination / name).exists())
         self.run_bash('DOTFILES_RESTORE_BACKUPS=1 bash scripts/setup.sh disable')
         for name in files:
             self.assertFalse((destination / name).is_symlink())

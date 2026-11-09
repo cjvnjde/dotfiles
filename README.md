@@ -88,9 +88,9 @@ A personal collection of dotfiles for macOS and Linux, designed for a consistent
 
 ### Arch Linux
 
-A full package list is maintained in [`packages/`](packages/):
-- `packages/official_packages.txt` — pacman packages
-- `packages/aur_packages.txt` — AUR packages
+Machine-specific inventories are not stored in this repository. Run
+`save-installed-packages` to save pacman package lists and installed mise tool
+versions beside `~/.local/state/system/SYSTEM.md`; see [`scripts/README.md`](scripts/README.md).
 
 Below are the packages relevant to these dotfiles.
 
@@ -196,7 +196,7 @@ releases; do not guess package names or agent installers.
    - Show me the proposed packages and their purpose, then obtain approval.
      Use the native package manager where possible and adapt package names to
      the platform. Check what is already installed; do not install unrelated
-     desktop packages or the entire packages/ inventory.
+     desktop packages or another machine's full package inventory.
    - On macOS use Homebrew. If missing, explain what it changes and ask before
      installing via the current official instructions at https://brew.sh.
      Initialize brew shellenv appropriately for this machine, without assuming
@@ -359,7 +359,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 
 **Custom modules** — some modules need more than a single symlink and have custom logic:
 
-- `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and symlinks individual scripts into it (including `ccode` and `clipboard-code` aliases).
+- `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and links every top-level `.sh` file except `setup.sh` and `setup-*.sh`, removing the `.sh` extension from command names. See [`scripts/README.md`](scripts/README.md) for paru review configuration, encrypted GPG backup/restore, and package-list destinations.
 - `agents/setup.sh` — uses `npx skills@latest` to install only the small global skill set for Pi, Codex, Claude Code, Zed, and universal agents; project skills remain opt-in.
 - `mako/setup.sh` — links only `$XDG_CONFIG_HOME/mako/config` (default `~/.config/mako/config`), preserving other files in the notification daemon's directory.
 

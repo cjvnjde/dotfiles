@@ -1,4 +1,0 @@
-chatgpt-desktop
-paru-bin
-paru-bin-debug
-zen-browser-bin
