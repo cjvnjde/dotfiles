@@ -240,7 +240,7 @@ releases; do not guess package names or agent installers.
      or unsuitable machine settings. Never copy the author's private local files.
    - Offer these copies only for selected modules, never overwriting an existing
      local file:
-       home/.zshrc.local.example -> home/.zshrc.local
+       home/.zshrc.local.example -> ~/.zshrc.local
        home/git/config.local.example -> home/git/config.local
        ghostty/config.local.example -> ghostty/config.local
        nvim/init.local.example.lua -> nvim/init.local.lua
@@ -259,7 +259,7 @@ releases; do not guess package names or agent installers.
      terminal font/theme, and Neovim overrides as relevant. Inspect existing
      integration hooks to avoid activating tools twice. Keep machine-specific
      settings in the supported local files, not tracked shared configuration.
-     Verify these local files are ignored by their owning repositories.
+     Verify local files stored in the checkout are ignored by their owning repositories.
 
 6. Preview and apply setup.
    - Run bash setup.sh --dry-run from the root and explain enabled/disabled
@@ -371,7 +371,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 | `alacritty`  | `~/.config/alacritty`              |                                |
 | `kitty`      | `~/.config/kitty`                  |                                |
 | `ghostty`    | `~/.config/ghostty`                |                                |
-| `zshrc`      | `~/.zshrc`                         | Loads `home/.zshrc.local`       |
+| `zshrc`      | `~/.zshrc`                         | Loads `~/.zshrc.local`         |
 | `git`        | `$XDG_CONFIG_HOME/git` (default `~/.config/git`) | Includes `home/git/config.local` |
 | `ideavim`    | `~/.ideavimrc`                     |                                |
 | `wezterm`    | `~/.wezterm.lua`                   |                                |
@@ -399,25 +399,25 @@ that module defines no keys. Short action callbacks remain inline in the mapping
 
 ### Local Overrides
 
-Machine-specific overrides live inside their owning module and are gitignored
-by that submodule. Copy a tracked example, remove `.example` from its name, and
-keep the resulting local file private. Local files accept general configuration,
-including options, paths, keybindings, plugins, and themes.
+Zsh reads machine-specific settings from `~/.zshrc.local`. Other modules keep
+their local files inside the module, gitignored by that submodule. Directory
+symlinks expose those same files at their normal configuration paths; editing
+either path changes the same file. Copy a tracked example to its local path and
+keep it private. Local files accept general configuration, including options,
+paths, keybindings, plugins, and themes.
 
 | File                  | Purpose                                           |
 | --------------------- | ------------------------------------------------- |
 | `.modules.local`      | Override enabled modules (supports `!module` to disable) |
-| `nvim/init.local.lua` | Top-level Lua and optional `before_init` / `after_init` functions |
-| `ghostty/config.local` | Any Ghostty settings; included after shared settings |
-| `home/.zshrc.local`   | Early Zsh setup and optional `zshrc_local_after_init` function |
-| `home/git/config.local` | Any Git sections; included last by `home/git/config` |
+| `~/.config/nvim/init.local.lua` | Top-level Lua and optional `before_init` / `after_init` functions |
+| `~/.config/ghostty/config.local` | Any Ghostty settings; included after shared settings |
+| `~/.zshrc.local`      | Early Zsh setup and optional `zshrc_local_after_init` function |
+| `~/.config/git/config.local` | Any Git sections; included last by `home/git/config` |
 
 Neovim loads its local file before the shared configuration, calls `before_init`,
 then calls `after_init` once shared options, plugins, LSP, and mappings are ready.
 Top-level code and both hooks are optional. Zsh follows the same early/late order;
-syntax highlighting loads after its late hook. Existing `~/.zshrc_local` files
-remain a fallback until `home/.zshrc.local` is created; they load after shared
-initialization to preserve their alias and keybinding overrides.
+syntax highlighting loads after its late hook.
 
 Ghostty loads `config.local` through its native optional include. On Omarchy,
 `font-family = monospace` in that file follows the system font, and the optional
@@ -433,7 +433,7 @@ Enable `git` in `.modules` and run the global `bash setup.sh` to link it;
 setup does not migrate private files. Setup removes only the legacy `~/.gitconfig` symlink
 owned by this checkout; an unrelated file is left alone and can override XDG Git
 settings.
-Edit private Git values with `git config --file /path/to/home/git/config.local`.
+Edit private Git values with `git config --file "${XDG_CONFIG_HOME:-$HOME/.config}/git/config.local"`.
 When inspecting includes with `git config --global`, add `--includes`.
 
 **Example `.modules.local`** — enable everything from `.modules` but drop Alacritty and add Kitty:

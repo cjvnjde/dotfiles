@@ -73,18 +73,13 @@ class ZshTestCase(unittest.TestCase):
 
 
 class ZshOverrideTests(ZshTestCase):
-    def test_legacy_overrides_run_once_after_shared_setup_before_highlighting(self):
-        (self.home / ".zshrc_local").write_text(
-            "startup_events+=(legacy)\n"
-            "alias ls='ls -lh'\n"
-            'eval "$(atuin init zsh)"\n'
-        )
+    def test_local_configuration_is_optional(self):
         output = self.startup()
-        self.assertIn("events=prompt,autosuggestions,legacy,atuin,highlighting", output)
-        self.assert_local_bindings(output)
+        self.assertIn("events=prompt,autosuggestions,highlighting", output)
+        self.assertIn("early=unset", output)
 
-    def test_module_local_setup_runs_early_and_late_before_highlighting(self):
-        (self.config / ".zshrc.local").write_text(
+    def test_home_local_setup_runs_early_and_late_before_highlighting(self):
+        (self.home / ".zshrc.local").write_text(
             "startup_events+=(early)\n"
             "export TEST_EARLY=ready\n"
             'ZSH_PLUGIN_DIRS=("$XDG_DATA_HOME/zsh/plugins")\n'
@@ -99,13 +94,6 @@ class ZshOverrideTests(ZshTestCase):
         self.assertIn("early=ready", output)
         self.assert_local_bindings(output)
 
-    def test_module_local_file_takes_precedence_over_legacy_file(self):
-        (self.config / ".zshrc.local").write_text("startup_events+=(early)\n")
-        (self.home / ".zshrc_local").write_text("startup_events+=(legacy)\n")
-        output = self.startup()
-        self.assertIn("events=early,prompt,autosuggestions,highlighting", output)
-        self.assertNotIn("legacy", output)
-
 
 @unittest.skipUnless(ZSH, "requires Zsh")
 class ZshDeferredTests(ZshTestCase):
@@ -119,7 +107,7 @@ class ZshDeferredTests(ZshTestCase):
         tool.write_text('#!/bin/sh\nprintf "tool-ran\\n" >> "$TEST_LOG"\n')
         tool.chmod(0o755)
         self.environment["TEST_TOOL_BIN"] = str(tool_bin)
-        self.local = self.config / ".zshrc.local"
+        self.local = self.home / ".zshrc.local"
         self.local.write_text('''
 typeset -ga startup_events=()
 PROMPT='__TEST_PROMPT__ '
