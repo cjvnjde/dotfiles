@@ -359,7 +359,7 @@ home/setup/wezterm.sh  → symlinks home/.wezterm.lua to ~/.wezterm.lua
 
 **Custom modules** — some modules need more than a single symlink and have custom logic:
 
-- `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and links every top-level `.sh` file except `setup.sh` and `setup-*.sh`, removing the `.sh` extension from command names. See [`scripts/README.md`](scripts/README.md) for paru review configuration, encrypted GPG backup/restore, and package-list destinations.
+- `scripts/setup.sh` — creates `~/.local/scripts/` as a real directory and links every top-level `.sh` file except `setup.sh` and `setup-*.sh`, removing the `.sh` extension from command names. See [`scripts/README.md`](scripts/README.md) for directory backups with optional age encryption, preview-first cleanup, paru review configuration, GPG backup/restore, and package-list destinations.
 - `agents/setup.sh` — uses `npx skills@latest` to install only the small global skill set for Pi, Codex, Claude Code, Zed, and universal agents; project skills remain opt-in.
 - `mako/setup.sh` — links only `$XDG_CONFIG_HOME/mako/config` (default `~/.config/mako/config`), preserving other files in the notification daemon's directory.
 
