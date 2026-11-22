@@ -60,3 +60,7 @@
 	path = mako
 	url = git@github.com:cjvnjde/dotfiles.mako.git
 	branch = main
+[submodule "herdr-app"]
+	path = herdr-app
+	url = git@github.com:cjvnjde/dotfiles.herdr-app.git
+	branch = main
