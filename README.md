@@ -240,7 +240,6 @@ releases; do not guess package names or agent installers.
      or unsuitable machine settings. Never copy the author's private local files.
    - Offer these copies only for selected modules, never overwriting an existing
      local file:
-       home/.zshrc.local.example -> ~/.zshrc.local
        home/git/config.local.example -> home/git/config.local
        ghostty/config.local.example -> ghostty/config.local
        nvim/init.local.example.lua -> nvim/init.local.lua
